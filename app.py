@@ -272,29 +272,33 @@ def read_blood_image(model, image) -> str:
         return f"⚠️ Gemini Vision hatası: {e}"
 
 
-def excel_to_program(model, tablo_metni: str):
-    """Excel'den okunan ham metni, gün-gün program listesine (JSON) çevirir."""
+def excel_to_plan(model, sayfalar_metni: str):
+    """Excel'deki tüm sayfaları okuyup hem program hem beslenmeyi JSON olarak döndürür."""
     if model is None:
         return None, "Gemini yapılandırılmamış."
     prompt = (
-        "Aşağıda bir antrenman programının Excel'den okunmuş ham hali var. "
-        "Bunu güne göre düzenle ve SADECE şu formatta geçerli bir JSON listesi döndür "
-        "(başka hiçbir metin, açıklama veya ``` işareti olmadan):\n"
-        '[{"gun": "Pazartesi", "odak": "Göğüs", "egzersizler": "Bench press 4x10, ..."}, ...]\n'
-        "Kurallar: sadece üst vücut; bacak/alt vücut hareketi varsa atla. "
-        "Her günün tüm egzersizlerini set x tekrar ile 'egzersizler' alanında birleştir.\n\n"
-        f"HAM VERİ:\n{tablo_metni}"
+        "Aşağıda bir Excel dosyasının TÜM sayfaları (sayfa adlarıyla) ham olarak var. "
+        "İçinde antrenman programı ve/veya beslenme planı olabilir. Hangi sayfanın ne "
+        "olduğunu kendin anla. SADECE şu formatta geçerli bir JSON nesnesi döndür "
+        "(başka metin veya ``` olmadan):\n"
+        '{\n'
+        '  "program": [{"gun":"Pazartesi","odak":"Göğüs","egzersizler":"Bench 4x10, ..."}],\n'
+        '  "beslenme": [{"ogun":"1. Öğün","icerik":"...","protein_g":0,"karb_g":0,"kcal":0}]\n'
+        '}\n'
+        "Kurallar: program SADECE üst vücut olsun, bacak/alt vücut hareketi varsa atla. "
+        "Beslenmede sayısal alanları (protein_g, karb_g, kcal) bilemiyorsan 0 yaz. "
+        "Bir bölüm dosyada yoksa onu boş liste [] bırak.\n\n"
+        f"HAM VERİ:\n{sayfalar_metni}"
     )
     ham = ask_coach(model, prompt)
-    # ``` işaretlerini ve olası "json" etiketini temizle
     temiz = ham.replace("```json", "").replace("```", "").strip()
     try:
         veri = json.loads(temiz)
-        if isinstance(veri, list) and veri:
+        if isinstance(veri, dict):
             return veri, None
         return None, "Beklenen formatta veri çıkmadı."
     except Exception as e:
-        return None, f"Program okunamadı: {e}"
+        return None, f"Excel içeriği okunamadı: {e}"
 
 
 def evaluate_with_coach(model, history: list, context: dict, user_msg: str) -> str:
@@ -673,22 +677,29 @@ with tab4:
 
     # ---- A) Haftalık antrenman programı (5 günlük üst vücut split) ----------
     st.markdown("#### 🏋️ Haftalık Antrenman Programı")
-    st.caption("Excel dosyası yükleyip koça gün-gün doldurtabilir veya tabloya elle yazabilirsiniz.")
+    st.caption("Excel yükleyip koça gün-gün doldurtabilirsiniz. Dosyada antrenman ve beslenme ayrı sayfalardaysa ikisini de okur.")
 
     # Excel yükleme alanı
-    prog_excel = st.file_uploader("Antrenman programı (Excel: .xlsx)", type=["xlsx", "xls"],
+    prog_excel = st.file_uploader("Program/beslenme dosyası (Excel: .xlsx)", type=["xlsx", "xls"],
                                   key="prog_excel")
     if prog_excel is not None:
-        if st.button("🤖 Koç Excel'i okuyup tabloya yazsın"):
+        if st.button("🤖 Koç Excel'i okuyup tablolara yazsın"):
             try:
                 import pandas as pd
-                df = pd.read_excel(prog_excel, header=None)
-                tablo_metni = df.to_csv(index=False, header=False)
-                with st.spinner("Koç programı okuyor ve düzenliyor..."):
-                    veri, hata = excel_to_program(model, tablo_metni)
+                # Tüm sayfaları oku (sheet_name=None -> {sayfa_adi: df})
+                sayfalar = pd.read_excel(prog_excel, header=None, sheet_name=None)
+                parcalar = []
+                for ad, df in sayfalar.items():
+                    parcalar.append(f"=== SAYFA: {ad} ===\n{df.to_csv(index=False, header=False)}")
+                sayfalar_metni = "\n\n".join(parcalar)
+                with st.spinner("Koç dosyayı okuyor ve düzenliyor..."):
+                    veri, hata = excel_to_plan(model, sayfalar_metni)
                 if veri:
-                    st.session_state["program_data"] = veri
-                    st.success("Program tabloya yazıldı. Aşağıda kontrol edip düzenleyebilirsiniz.")
+                    if veri.get("program"):
+                        st.session_state["program_data"] = veri["program"]
+                    if veri.get("beslenme"):
+                        st.session_state["beslenme_data"] = veri["beslenme"]
+                    st.success("Tablolar dolduruldu. Aşağıda kontrol edip düzenleyebilirsiniz.")
                     st.rerun()
                 else:
                     st.error(hata or "Excel okunamadı.")
@@ -718,11 +729,11 @@ with tab4:
     # ---- B) Beslenme planı --------------------------------------------------
     st.markdown("#### 🍽️ Beslenme Planı")
     st.caption("Karbonhidrat: yalnızca pirinç, pirinç kreması, pirinç patlağı, karabuğday patlağı. Protein: hindi göğsü.")
-    default_diyet = kayitli.get("beslenme", [
+    default_diyet = st.session_state.get("beslenme_data", kayitli.get("beslenme", [
         {"ogun": "1. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
         {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
         {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-    ])
+    ]))
     beslenme = st.data_editor(
         default_diyet,
         num_rows="dynamic",
