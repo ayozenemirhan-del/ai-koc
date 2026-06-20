@@ -272,6 +272,31 @@ def read_blood_image(model, image) -> str:
         return f"⚠️ Gemini Vision hatası: {e}"
 
 
+def excel_to_program(model, tablo_metni: str):
+    """Excel'den okunan ham metni, gün-gün program listesine (JSON) çevirir."""
+    if model is None:
+        return None, "Gemini yapılandırılmamış."
+    prompt = (
+        "Aşağıda bir antrenman programının Excel'den okunmuş ham hali var. "
+        "Bunu güne göre düzenle ve SADECE şu formatta geçerli bir JSON listesi döndür "
+        "(başka hiçbir metin, açıklama veya ``` işareti olmadan):\n"
+        '[{"gun": "Pazartesi", "odak": "Göğüs", "egzersizler": "Bench press 4x10, ..."}, ...]\n'
+        "Kurallar: sadece üst vücut; bacak/alt vücut hareketi varsa atla. "
+        "Her günün tüm egzersizlerini set x tekrar ile 'egzersizler' alanında birleştir.\n\n"
+        f"HAM VERİ:\n{tablo_metni}"
+    )
+    ham = ask_coach(model, prompt)
+    # ``` işaretlerini ve olası "json" etiketini temizle
+    temiz = ham.replace("```json", "").replace("```", "").strip()
+    try:
+        veri = json.loads(temiz)
+        if isinstance(veri, list) and veri:
+            return veri, None
+        return None, "Beklenen formatta veri çıkmadı."
+    except Exception as e:
+        return None, f"Program okunamadı: {e}"
+
+
 def evaluate_with_coach(model, history: list, context: dict, user_msg: str) -> str:
     """Kayıtlı program + beslenme + son verileri bağlam olarak verip koçla sohbet eder."""
     if model is None:
@@ -648,14 +673,36 @@ with tab4:
 
     # ---- A) Haftalık antrenman programı (5 günlük üst vücut split) ----------
     st.markdown("#### 🏋️ Haftalık Antrenman Programı")
-    st.caption("5 günlük üst vücut split. Her gün için odak bölge ve egzersizleri yazın.")
-    default_program = kayitli.get("program", [
+    st.caption("Excel dosyası yükleyip koça gün-gün doldurtabilir veya tabloya elle yazabilirsiniz.")
+
+    # Excel yükleme alanı
+    prog_excel = st.file_uploader("Antrenman programı (Excel: .xlsx)", type=["xlsx", "xls"],
+                                  key="prog_excel")
+    if prog_excel is not None:
+        if st.button("🤖 Koç Excel'i okuyup tabloya yazsın"):
+            try:
+                import pandas as pd
+                df = pd.read_excel(prog_excel, header=None)
+                tablo_metni = df.to_csv(index=False, header=False)
+                with st.spinner("Koç programı okuyor ve düzenliyor..."):
+                    veri, hata = excel_to_program(model, tablo_metni)
+                if veri:
+                    st.session_state["program_data"] = veri
+                    st.success("Program tabloya yazıldı. Aşağıda kontrol edip düzenleyebilirsiniz.")
+                    st.rerun()
+                else:
+                    st.error(hata or "Excel okunamadı.")
+            except Exception as e:
+                st.error(f"Excel okunamadı: {e}")
+
+    # Tablo kaynağı: önce yüklenen/oturum verisi, yoksa kayıtlı, yoksa varsayılan
+    default_program = st.session_state.get("program_data", kayitli.get("program", [
         {"gun": "Pazartesi", "odak": "Göğüs",           "egzersizler": ""},
         {"gun": "Salı",      "odak": "Sırt",            "egzersizler": ""},
         {"gun": "Çarşamba",  "odak": "Omuz",            "egzersizler": ""},
         {"gun": "Perşembe",  "odak": "Kol (Biceps/Triceps)", "egzersizler": ""},
         {"gun": "Cuma",      "odak": "Göğüs/Sırt (tekrar)",  "egzersizler": ""},
-    ])
+    ]))
     program = st.data_editor(
         default_program,
         num_rows="dynamic",
