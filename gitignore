@@ -1,0 +1,5 @@
+# Şifre/anahtar dosyaları — ASLA internete yüklenmemeli
+firebase_key.json
+.streamlit/secrets.toml
+__pycache__/
+*.pyc
