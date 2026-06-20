@@ -106,6 +106,18 @@ PANDA_CSS = """
         border-right: 1px solid var(--ink);
     }
     section[data-testid="stSidebar"] * { color: #FFFFFF !important; }
+    /* Kenar çubuğundaki yazı kutularında metin görünür olsun (beyaz değil) */
+    section[data-testid="stSidebar"] textarea,
+    section[data-testid="stSidebar"] input {
+        color: #111111 !important;
+        -webkit-text-fill-color: #111111 !important;
+        background-color: #FFFFFF !important;
+    }
+    section[data-testid="stSidebar"] textarea::placeholder,
+    section[data-testid="stSidebar"] input::placeholder {
+        color: #8A8A8A !important;
+        -webkit-text-fill-color: #8A8A8A !important;
+    }
 
     /* Sekmeler */
     .stTabs [data-baseweb="tab-list"] { gap: 4px; border-bottom: 1px solid var(--line); }
@@ -301,10 +313,11 @@ def excel_to_plan(model, sayfalar_metni: str):
         "olduğunu kendin anla. SADECE şu formatta geçerli bir JSON nesnesi döndür "
         "(başka metin veya ``` olmadan):\n"
         '{\n'
-        '  "program": [{"gun":"Pazartesi","odak":"Göğüs","egzersizler":"Bench 4x10, ..."}],\n'
+        '  "program": [{"gun":"Pazartesi","odak":"Göğüs","egzersizler":"1. Bench 4x10\\n2. Incline Fly 3x12"}],\n'
         '  "beslenme": [{"ogun":"1. Öğün","icerik":"...","protein_g":0,"karb_g":0,"kcal":0}]\n'
         '}\n'
         "Kurallar: program SADECE üst vücut olsun, bacak/alt vücut hareketi varsa atla. "
+        "'egzersizler' alanında her egzersizi AYRI SATIRA yaz (aralarına \\n koy), virgülle yan yana DİZME. "
         "Beslenmede sayısal alanları (protein_g, karb_g, kcal) bilemiyorsan 0 yaz. "
         "Bir bölüm dosyada yoksa onu boş liste [] bırak.\n\n"
         f"HAM VERİ:\n{sayfalar_metni}"
@@ -753,6 +766,21 @@ with tab4:
         key="program_editor",
     )
 
+    # Okunaklı önizleme: her gün ve egzersizleri alt alta
+    with st.expander("📖 Programı okunaklı görünümde aç", expanded=True):
+        for satir in program:
+            gun = str(satir.get("gun", "")).strip()
+            odak = str(satir.get("odak", "")).strip()
+            egz = str(satir.get("egzersizler", "")).strip()
+            if not (gun or egz):
+                continue
+            st.markdown(f"**{gun} — {odak}**")
+            # virgül veya yeni satıra göre böl, her egzersizi ayrı satırda göster
+            parcalar = [e.strip() for e in egz.replace(",", "\n").split("\n") if e.strip()]
+            if parcalar:
+                st.markdown("\n".join(f"- {e}" for e in parcalar))
+            st.markdown("")
+
     # ---- B) Beslenme planı --------------------------------------------------
     st.markdown("#### 🍽️ Beslenme Planı")
     st.caption("Karbonhidrat: yalnızca pirinç, pirinç kreması, pirinç patlağı, karabuğday patlağı. Protein: hindi göğsü.")
@@ -761,6 +789,7 @@ with tab4:
         {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
         {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
     ]))
+    st.caption("Kalori, protein ve karbonhidrattan OTOMATİK hesaplanır (≈ 4 kcal/g). Yağ dahil değildir.")
     beslenme = st.data_editor(
         default_diyet,
         num_rows="dynamic",
@@ -770,10 +799,28 @@ with tab4:
             "icerik": st.column_config.TextColumn("İçerik", width="large"),
             "protein_g": st.column_config.NumberColumn("Protein (g)", width="small"),
             "karb_g": st.column_config.NumberColumn("Karb (g)", width="small"),
-            "kcal": st.column_config.NumberColumn("Kalori", width="small"),
+            "kcal": st.column_config.NumberColumn("Kalori (oto)", width="small", disabled=True),
         },
         key="beslenme_editor",
     )
+
+    # Kaloriyi protein+karbonhidrattan otomatik hesapla ve toplamı göster
+    def _say(x):
+        try:
+            return float(x)
+        except Exception:
+            return 0.0
+    toplam_kcal = 0
+    toplam_pro = 0
+    for _r in beslenme:
+        _kcal = round((_say(_r.get("protein_g")) + _say(_r.get("karb_g"))) * 4)
+        _r["kcal"] = _kcal
+        toplam_kcal += _kcal
+        toplam_pro += _say(_r.get("protein_g"))
+    st.session_state["beslenme_data"] = beslenme
+    mk1, mk2 = st.columns(2)
+    mk1.metric("Toplam kalori (oto)", f"{toplam_kcal} kcal")
+    mk2.metric("Toplam protein", f"{int(toplam_pro)} g")
 
     notlar = st.text_area("Ek notlar (takviye, hedef kalori, vb.)", value=kayitli.get("notlar", ""))
 
