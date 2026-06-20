@@ -154,6 +154,34 @@ st.markdown(PANDA_CSS, unsafe_allow_html=True)
 
 
 # =============================================================================
+# 2.5) GİRİŞ ŞİFRESİ (basit koruma)
+# =============================================================================
+def check_password() -> bool:
+    """Şifre ekranı. APP_PASSWORD secret'i tanımlı değilse (yerel kullanım) atlanır."""
+    expected = st.secrets.get("APP_PASSWORD", "")
+    if not expected:
+        return True  # şifre tanımlı değil -> serbest (örn. kendi bilgisayarınızda)
+    if st.session_state.get("auth_ok"):
+        return True
+
+    st.markdown("## 🐼 Giriş")
+    st.caption("Bu alan kişiseldir. Devam etmek için şifrenizi girin.")
+    pwd = st.text_input("Şifre", type="password", label_visibility="collapsed",
+                        placeholder="Şifre")
+    if st.button("Giriş yap"):
+        if pwd == expected:
+            st.session_state["auth_ok"] = True
+            st.rerun()
+        else:
+            st.error("Şifre yanlış.")
+    return False
+
+
+if not check_password():
+    st.stop()
+
+
+# =============================================================================
 # 3) GEMINI ENTEGRASYONU
 # =============================================================================
 @st.cache_resource(show_spinner=False)
