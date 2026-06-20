@@ -292,6 +292,10 @@ def excel_to_plan(model, sayfalar_metni: str):
     )
     ham = ask_coach(model, prompt)
     temiz = ham.replace("```json", "").replace("```", "").strip()
+    # Cevabın içinden JSON nesnesini ayıkla (başta/sonda fazladan metin olabilir)
+    bas, son = temiz.find("{"), temiz.rfind("}")
+    if bas != -1 and son != -1 and son > bas:
+        temiz = temiz[bas:son + 1]
     try:
         veri = json.loads(temiz)
         if isinstance(veri, dict):
