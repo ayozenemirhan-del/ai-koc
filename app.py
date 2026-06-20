@@ -291,6 +291,8 @@ def excel_to_plan(model, sayfalar_metni: str):
         f"HAM VERİ:\n{sayfalar_metni}"
     )
     ham = ask_coach(model, prompt)
+    if not ham or not ham.strip():
+        return None, "Koç boş cevap döndürdü. (Excel okunamadı veya Gemini yanıt vermedi.)"
     temiz = ham.replace("```json", "").replace("```", "").strip()
     # Cevabın içinden JSON nesnesini ayıkla (başta/sonda fazladan metin olabilir)
     bas, son = temiz.find("{"), temiz.rfind("}")
@@ -301,8 +303,10 @@ def excel_to_plan(model, sayfalar_metni: str):
         if isinstance(veri, dict):
             return veri, None
         return None, "Beklenen formatta veri çıkmadı."
-    except Exception as e:
-        return None, f"Excel içeriği okunamadı: {e}"
+    except Exception:
+        # Teşhis için koçun döndürdüğü ham cevabın bir kısmını göster
+        ozet = ham.strip().replace("\n", " ")[:300]
+        return None, f"JSON'a çevrilemedi. Koçun cevabı şöyle başlıyor: «{ozet}»"
 
 
 def evaluate_with_coach(model, history: list, context: dict, user_msg: str) -> str:
