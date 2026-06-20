@@ -198,8 +198,27 @@ def init_gemini():
 
     try:
         genai.configure(api_key=api_key)
+
+        # Hesapta GERÇEKTEN kullanılabilir bir model seç (model adları zamanla değişir).
+        secili = st.secrets.get("GEMINI_MODEL", "")  # isterseniz secrets'ten sabitleyebilirsiniz
+        if not secili:
+            tercih = [
+                "gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro",
+                "gemini-flash-latest", "gemini-pro-latest", "gemini-1.5-flash",
+            ]
+            mevcut = []
+            try:
+                for m in genai.list_models():
+                    if "generateContent" in getattr(m, "supported_generation_methods", []):
+                        mevcut.append(m.name.replace("models/", ""))
+            except Exception:
+                mevcut = []
+            # Önce tercih listesinden uygun olanı, yoksa mevcutlardan ilkini seç
+            secili = next((t for t in tercih if t in mevcut),
+                          (mevcut[0] if mevcut else "gemini-2.0-flash"))
+
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-pro",
+            model_name=secili,
             system_instruction=COACH_SYSTEM_PROMPT,
         )
         return model, None
