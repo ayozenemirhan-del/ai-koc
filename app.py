@@ -47,9 +47,11 @@ KESİN KURALLAR:
 1) ANTRENMAN: Programlar 5 günlük split şeklinde ve SADECE üst vücut
    hipertrofisi odaklı olmalıdır. Hiçbir koşulda alt vücut / bacak egzersizi
    (squat, leg press, lunge, deadlift dahil) tavsiye edilmez.
-2) BESLENME — KARBONHİDRAT: Karbonhidrat kaynakları yulaf hariç tüm önerilere açıktır. 
-Program için  en verimli seçenekler kişinin hedefine ve yağ oranına göre değerlendirilir.
-3) BESLENME — PROTEİN: Protein ağırlıklı olarak 1. tercih HİNDİ GÖĞSÜ üzerinden
+2) BESLENME — KARBONHİDRAT: Karbonhidrat kaynakları KATI bir şekilde SADECE
+   şunlarla sınırlıdır: pirinç, pirinç kreması, pirinç patlağı ve karabuğday
+   patlağı. Yulaf, ekmek, makarna, patates veya başka herhangi bir kaynak
+   KESİNLİKLE önerilmez.
+3) BESLENME — PROTEİN: Protein ağırlıklı olarak HİNDİ GÖĞSÜ üzerinden
    hesaplanır.
 4) FOTOĞRAF ANALİZİ: Kullanıcı haftalık form/postür fotoğrafı yüklediğinde
    asimetri ve postür kontrolü yap. Gelişim durmuşsa üst vücut programını ve
@@ -620,7 +622,7 @@ model, gem_err = init_gemini()
 db, db_err = init_firestore()
 
 with st.sidebar:
-    st.markdown("## 🐼 AI Fitness Koçu")
+    st.markdown("## 🐼 Emirhan Ayözen")
     st.caption("Agresif definisyon · üst vücut odaklı")
     if st.secrets.get("APP_PASSWORD", ""):
         if st.button("Çıkış yap", use_container_width=True):
@@ -656,14 +658,15 @@ with st.sidebar:
 # 6) BAŞLIK & SEKMELER
 # =============================================================================
 st.title("Sporcu Takip Dashboard'u")
-st.markdown('<p class="panda-muted">Disiplin, ölçüm ve veri. Bahane yok.</p>', unsafe_allow_html=True)
+st.markdown('<p class="panda-muted">Allah sabredenlerle beraberdir.</p>', unsafe_allow_html=True)
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📋 Günlük Veri Girişi",
     "📸 Haftalık Check-in",
     "📈 Gelişim Grafikleri",
     "🗂️ Program & Değerlendirme",
     "🩺 Sağlık",
+    "🏃 Kardiyo",
 ])
 
 
@@ -728,8 +731,11 @@ with tab1:
         if st.session_state.get("kcal_foto_tahmin"):
             st.info(st.session_state["kcal_foto_tahmin"])
 
-    kalori = st.number_input("Toplam alınan kalori (kcal)", min_value=0, max_value=8000, step=50,
-                             value=int(g_kayit.get("kalori", 2000)), key=f"kalori_{gun_str}")
+    _kalori_kayit = g_kayit.get("kalori", None)
+    kalori = st.number_input("Toplam alınan kalori (kcal) — boş bırakabilirsiniz", min_value=0, max_value=8000, step=50,
+                             value=(int(_kalori_kayit) if _kalori_kayit not in (None, "", 0) else None),
+                             placeholder="Girmezseniz boş kalır",
+                             key=f"kalori_{gun_str}")
 
     st.markdown("#### 😴 Uyku & Aktivite")
     s1, s2, s3 = st.columns(3)
@@ -753,7 +759,7 @@ with tab1:
         payload = {
             "tarih": gun_str,
             "kilo": float(kilo),
-            "kalori": int(kalori),
+            "kalori": (int(kalori) if kalori not in (None, "") else None),
             "ogunler": meals,
             "uyku_saati": uyku.strftime("%H:%M"),
             "uyanma_saati": uyanma.strftime("%H:%M"),
@@ -1301,3 +1307,51 @@ with tab5:
         st.markdown("##### 🐼 Koç Sağlık Değerlendirmesi")
         st.markdown(f'<div class="panda-card">{st.session_state["saglik_degerlendirme"]}</div>', unsafe_allow_html=True)
         st.caption("⚠️ Bu bir tıbbi tavsiye değildir. Kan değerleriniz ve sakatlıklarınız için hekiminize danışın.")
+
+
+# -----------------------------------------------------------------------------
+# SEKME 6 — KARDİYO
+# -----------------------------------------------------------------------------
+with tab6:
+    st.subheader("Kardiyo Kaydı")
+    k_tarih = st.date_input("Tarih", value=date.today(), key="kardiyo_tarih")
+    k_str = k_tarih.isoformat()
+
+    k_kayit = load_doc(db, "kardiyo", k_str)
+    if k_kayit:
+        st.caption("✅ Bu tarihe ait kardiyo kaydı yüklendi.")
+
+    st.caption("Her satıra bir kardiyo seansı: tür, süre ve ortalama nabız.")
+    default_kardiyo = k_kayit.get("seanslar", [
+        {"tur": "Tempolu yürüyüş", "sure_dk": 30, "ort_nabiz": 120},
+    ])
+    kardiyo = st.data_editor(
+        default_kardiyo,
+        num_rows="dynamic",
+        use_container_width=True,
+        column_order=("tur", "sure_dk", "ort_nabiz"),
+        column_config={
+            "tur": st.column_config.SelectboxColumn(
+                "Tür",
+                options=["Tempolu yürüyüş", "Koşu", "Bisiklet", "Eliptik",
+                         "Kürek", "Yüzme", "Merdiven", "HIIT", "Diğer"],
+                width="medium",
+            ),
+            "sure_dk": st.column_config.NumberColumn("Süre (dk)", min_value=0, max_value=600, width="small"),
+            "ort_nabiz": st.column_config.NumberColumn("Ort. Nabız (bpm)", min_value=0, max_value=230, width="small"),
+        },
+        key=f"kardiyo_editor_{k_str}",
+    )
+
+    # Özet metrikler
+    top_sure = sum(_say(r.get("sure_dk")) for r in kardiyo)
+    nabizlar = [_say(r.get("ort_nabiz")) for r in kardiyo if _say(r.get("ort_nabiz")) > 0]
+    ort_nabiz = round(sum(nabizlar) / len(nabizlar)) if nabizlar else 0
+    kc1, kc2 = st.columns(2)
+    kc1.metric("Toplam süre", f"{int(top_sure)} dk")
+    kc2.metric("Ortalama nabız", f"{ort_nabiz} bpm" if ort_nabiz else "—")
+
+    if st.button("💾 Kardiyoyu Firebase'e Kaydet", type="primary"):
+        payload = {"tarih": k_str, "seanslar": kardiyo}
+        ok, msg = save_doc(db, "kardiyo", k_str, payload)
+        (st.success if ok else st.error)(msg)
