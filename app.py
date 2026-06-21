@@ -40,43 +40,51 @@ except Exception:
 # 1) AI KOÇ SİSTEM KOMUTU (SYSTEM PROMPT) — KODA GÖMÜLÜDÜR
 # =============================================================================
 COACH_SYSTEM_PROMPT = """
-Sen kullanıcının agresif definisyon (yağ yakım) sürecini yöneten, tavizsiz ve
+Sen kullanıcının definisyon (yağ yakım) sürecini yöneten, tavizsiz ve
 gerçekçi bir profesyonel fitness koçusun. Bilimsel, net ve doğrudan konuşursun.
 
-KESİN KURALLAR:
-1) ANTRENMAN: Programlar 5 günlük split şeklinde ve SADECE üst vücut
-   hipertrofisi odaklı olmalıdır. Hiçbir koşulda alt vücut / bacak egzersizi
-   (squat, leg press, lunge, deadlift dahil) tavsiye edilmez.
-2) BESLENME — KARBONHİDRAT: Karbonhidrat kaynakları KATI bir şekilde SADECE
-   şunlarla sınırlıdır: pirinç, pirinç kreması, pirinç patlağı ve karabuğday
-   patlağı. Yulaf, ekmek, makarna, patates veya başka herhangi bir kaynak
-   KESİNLİKLE önerilmez.
-3) BESLENME — PROTEİN: Protein ağırlıklı olarak HİNDİ GÖĞSÜ üzerinden
-   hesaplanır.
-4) FOTOĞRAF ANALİZİ: Kullanıcı haftalık form/postür fotoğrafı yüklediğinde
-   asimetri ve postür kontrolü yap. Gelişim durmuşsa üst vücut programını ve
-   katı makro planını revize et.
-5) SAĞLIK & SAKATLIK: Kullanıcının aktif sakatlıkları varsa o bölgeyi
-   zorlayan/ağrıtan egzersizleri ÖNERME; yerine güvenli alternatif ver.
-   Program ve beslenme planını daima sakatlık durumuna göre uyarla.
-6) KAN TAHLİLİ: Kan değerlerini yorumlarken bir DOKTOR DEĞİLSİN. Referans
-   dışı (yüksek/düşük) değerleri açıkça işaretle ve "bunu mutlaka bir hekime
-   danışın" uyarısı ver. Tanı KOYMA, ilaç önerme. Sadece beslenme/antrenmanı
-   bu değerleri gözeterek (örn. demir/D vitamini düşükse beslenme notu)
-   genel çerçevede uyarlarsın. Kritik görünen değerlerde derhal hekime
-   yönlendir.
-7) BİLİMSEL DAYANAK: Önerilerin güçlü kanıta dayansın — meta-analizler ve
-   geniş, tekrarlanmış çalışmaların ortak görüşüne uy. 3-5 kişilik, zayıf veya
-   tek seferlik çalışmalara ya da "bro-science"a güvenme. Bir konuda kanıt zayıf
-   veya tartışmalıysa bunu açıkça söyle. KAYNAK UYDURMA: var olmayan makale,
-   yazar, dergi veya sayı UYDURMA; emin değilsen "bu kesin kanıtlı değil" de.
-8) TEMBEL ÖNERİ YASAK: Kolaya kaçıp her şeye "yulaf ve whey protein" deme.
-   Karbonhidrat sadece izinli kaynaklardan (pirinç vb.), protein hindi göğsü
-   ağırlıklı olacak; whey/yulaf varsayılan çözüm olarak sunulmaz.
-9) EKSİK VERİ: Bir alan (adım, kalori, uyku vb.) boş/girilmemişse bunu "sıfır"
+SPORCU PROFİLİ (kullanıcıyı buna göre değerlendir):
+- Yaklaşık 2 yıllık düzenli vücut geliştirme tecrübesi olan, ORTA SEVİYE bir
+  sporcu. Temel hareketleri ve mantığı biliyor; ona göre ileri seviye, ayrıntılı
+  ve net konuş, basit/acemi açıklamalara boğma.
+- Şu anda yağ oranı YÜKSEK. Hedef: kası mümkün olduğunca koruyarak, en optimum
+  ve sürdürülebilir şekilde yağ oranını düşürmek (temiz definisyon).
+- Önerilerini bu profile göre kişiselleştir (kalori açığı, protein hedefi, hacim,
+  haftalık ilerleme bu bağlama göre).
+
+TEMEL İLKE — KANITA DAYALI VE OPTİMUM:
+Tüm öneri ve değerlendirmeler, doğruluğu reddedilemeyecek düzeyde yerleşmiş
+(meta-analiz ve geniş bilimsel uzlaşıya dayanan) kabuller üzerine kurulur ve
+sporcu için EN OPTİMUM sonucu hedefler. Dogmatik/keyfi yasaklar koyma; besin ve
+hareket seçiminde belirleyici olan toplam kalori, makro dengesi, hacim ve
+ilerlemedir. Tartışmalı, zayıf veya anekdotsal şeyleri "kesin" gibi sunma; emin
+değilsen bunu açıkça söyle.
+
+KURALLAR:
+1) FOTOĞRAF ANALİZİ: Kullanıcı haftalık form/postür fotoğrafı yüklediğinde
+   asimetri ve postür kontrolü yap. Gelişim durmuşsa program ve makro planını
+   revize et.
+2) SAĞLIK & SAKATLIK (ÖNCELİKLİ): Kullanıcının Sağlık sekmesinde girdiği aktif
+   sakatlıkları MUTLAKA dikkate al. O bölgeyi zorlayan/ağrıtan hareketleri
+   ÖNERME; güvenli alternatif ver. (Örn. ön çapraz bağ / diz sorunu varsa ağır
+   bacak/eklem yükleyen hareketlerden kaçın, eklemi koruyan alternatifler sun.)
+   Program ve beslenmeyi daima sakatlık durumuna göre uyarla.
+3) KAN TAHLİLİ: Kan değerlerini yorumlarken bir DOKTOR DEĞİLSİN. Referans dışı
+   (yüksek/düşük) değerleri açıkça işaretle ve "bunu mutlaka bir hekime danışın"
+   uyarısı ver. Tanı KOYMA, ilaç önerme. Beslenme/antrenmanı bu değerleri
+   gözeterek genel çerçevede uyarlarsın. Kritik değerlerde derhal hekime yönlendir.
+4) BİLİMSEL DAYANAK: Önerilerin güçlü kanıta dayansın — meta-analizler ve geniş,
+   tekrarlanmış çalışmaların ortak görüşüne uy. 3-5 kişilik, zayıf veya tek
+   seferlik çalışmalara ya da "bro-science"a güvenme. Bir konuda kanıt zayıf veya
+   tartışmalıysa bunu açıkça söyle. KAYNAK UYDURMA: var olmayan makale, yazar,
+   dergi veya sayı UYDURMA; emin değilsen "bu kesin kanıtlı değil" de.
+5) TEMBEL/KLİŞE ÖNERİ YASAK: Kolaya kaçıp her şeye "yulaf ve whey protein" gibi
+   klişe cevap verme. Besin ve makro seçimini sporcunun hedefine, tercihlerine ve
+   kanıta göre kişiselleştir.
+6) EKSİK VERİ: Bir alan (adım, kalori, uyku vb.) boş/girilmemişse bunu "sıfır"
    ya da "kullanıcı yapmadı/başarısız" gibi YORUMLAMA. Sadece "bu veri henüz
    girilmemiş" de ve o alan üzerinden suçlayıcı çıkarım yapma.
-10) Tüm cevapların TÜRKÇE olmalı. Gereksiz övgüden kaçın; kullanıcıyı hedefe
+7) Tüm cevapların TÜRKÇE olmalı. Gereksiz övgüden kaçın; kullanıcıyı hedefe
    odaklı tut. Sağlık açısından kritik bir uyarı görürsen (örn. aşırı düşük
    kalori, sakatlık belirtisi) bunu açıkça belirt.
 """.strip()
@@ -443,6 +451,18 @@ def _gun_programi(plan, gun_adi):
 
 def _egzersiz_satirlari(egz):
     return [e.strip() for e in str(egz or "").replace(",", "\n").split("\n") if e.strip()]
+
+
+def _dinlenme_gunu_mu(gun_prog):
+    """Günün programı dinlenme/recovery ise True döner."""
+    if not gun_prog:
+        return False
+    metin = (str(gun_prog.get("odak", "")) + " " + str(gun_prog.get("egzersizler", ""))).lower()
+    anahtarlar = ["dinlenme", "dinlen", "recovery", "rest", "off", "toparlan", "izin"]
+    # Gerçek bir set ifadesi (örn. 4x10) varsa dinlenme sayma
+    if _re.search(r"\d+\s*[xX×]\s*\d+", metin):
+        return False
+    return any(k in metin for k in anahtarlar)
     """Kan tahlili fotoğrafını/ekran görüntüsünü Gemini Vision ile okur ve özetler."""
     if model is None:
         return "⚠️ Gemini yapılandırılmamış."
@@ -472,7 +492,7 @@ def excel_to_plan(model, sayfalar_metni: str):
         '  "program": [{"gun":"Pazartesi","odak":"Göğüs","egzersizler":"1. Bench 4x10\\n2. Incline Fly 3x12"}],\n'
         '  "beslenme": [{"ogun":"1. Öğün","icerik":"...","protein_g":0,"karb_g":0,"yag_g":0,"kcal":0}]\n'
         '}\n'
-        "Kurallar: program SADECE üst vücut olsun, bacak/alt vücut hareketi varsa atla. "
+        "Kurallar: sporcunun mevcut programını olduğu gibi düzenle, içeriği değiştirme; sadece düzenli tabloya dök. "
         "'egzersizler' alanında her egzersizi AYRI SATIRA yaz (aralarına \\n koy), virgülle yan yana DİZME. "
         "Beslenmede sayısal alanları (protein_g, karb_g, kcal) bilemiyorsan 0 yaz. "
         "Bir bölüm dosyada yoksa onu boş liste [] bırak.\n\n"
@@ -515,9 +535,8 @@ KAYITLI VERİLER:
 
 KULLANICININ YENİ MESAJI: {user_msg}
 
-Kurallara sadık kalarak (5 günlük üst vücut split, sadece pirinç/pirinç kreması/
-pirinç patlağı/karabuğday patlağı karbonhidrat, hindi göğsü protein) net ve
-maddeli cevap ver.
+Kanıta dayalı, sporcunun profiline ve sakatlıklarına uygun, net ve maddeli
+cevap ver.
 """.strip()
     return ask_coach(model, prompt)
 
@@ -531,9 +550,9 @@ def revise_plan_with_coach(model, context: dict):
         "Aşağıda kullanıcının güncel program, beslenme planı (antrenman/dinlenme günü), "
         "son loglar ve sağlık verileri var. Bunları kurallarına göre değerlendir ve "
         "GEREKLİ GÜNCELLEMELERİ yaparak YENİ planı üret.\n\n"
-        "Kurallar: 5 günlük üst vücut split, bacak yok; karbonhidrat sadece pirinç/"
-        "pirinç kreması/pirinç patlağı/karabuğday patlağı; protein hindi göğsü ağırlıklı; "
-        "güçlü bilimsel kanıta dayan, uydurma kaynak verme.\n\n"
+        "Kurallar: güçlü bilimsel kanıta dayan, sporcunun profiline (2 yıl tecrübe, "
+        "yağ oranı yüksek, optimum definisyon) ve Sağlık sekmesindeki sakatlıklara uy; "
+        "uydurma kaynak verme.\n\n"
         "SADECE şu formatta geçerli bir JSON nesnesi döndür (başka metin/``` olmadan):\n"
         '{\n'
         '  "aciklama": "Neyi neden değiştirdiğinin kısa özeti",\n'
@@ -654,7 +673,7 @@ db, db_err = init_firestore()
 
 with st.sidebar:
     st.markdown("## 🐼 Emirhan Ayözen")
-    st.caption("Agresif definisyon · üst vücut odaklı")
+    st.caption("Profesyonel koçluk")
     if st.secrets.get("APP_PASSWORD", ""):
         if st.button("Çıkış yap", use_container_width=True):
             if _cookie_mgr is not None:
@@ -688,7 +707,7 @@ with st.sidebar:
 # =============================================================================
 # 6) BAŞLIK & SEKMELER
 # =============================================================================
-st.title("Sporcu Takip Dashboard'u")
+st.title("Sporcu Verileri")
 st.markdown('<p class="panda-muted">Allah sabredenlerle beraberdir.</p>', unsafe_allow_html=True)
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -725,9 +744,17 @@ with tab1:
 
     # ---- Bugünün antrenmanı (set set tekrar/kg) ----------------------------
     gun_prog = _gun_programi(plan, gun_adi)
+    dinlenme_gunu = _dinlenme_gunu_mu(gun_prog)
     st.markdown(f"#### 🏋️ Bugünün Antrenmanı — {gun_adi}")
     antrenman_kayit = []
-    if gun_prog and _egzersiz_satirlari(gun_prog.get("egzersizler")):
+    if dinlenme_gunu:
+        st.markdown(
+            '<div class="panda-card" style="text-align:center;padding:34px 18px;">'
+            '<div style="font-size:2rem;">😴</div>'
+            '<div style="font-size:1.4rem;font-weight:700;margin-top:6px;">Bugün dinlenme günü</div>'
+            '<div class="panda-muted" style="margin-top:4px;">Antrenman yok — toparlanma ve uyku öncelikli.</div>'
+            '</div>', unsafe_allow_html=True)
+    elif gun_prog and _egzersiz_satirlari(gun_prog.get("egzersizler")):
         st.caption(f"Odak: {gun_prog.get('odak','')}  ·  Her set için tekrar ve kilo girin.")
         kayitli_ant = g_kayit.get("antrenman_kayit")
         if kayitli_ant:
@@ -754,9 +781,39 @@ with tab1:
         st.info(f"{gun_adi} için programda hareket yok (dinlenme olabilir) veya program henüz girilmedi. "
                 "Program & Değerlendirme sekmesinden girebilirsiniz.")
 
-    # ---- Bugünün beslenmesi (Antrenman Günü planı) — öğün öğün uyum --------
-    st.markdown("#### 🍽️ Bugünün Beslenmesi (Antrenman Günü planı)")
-    on_meals = plan.get("beslenme_on", []) or plan.get("beslenme", [])
+    # ---- Bugün kardiyo yaptım mı? -----------------------------------------
+    st.markdown("#### 🏃 Kardiyo")
+    onceki_kardiyo = g_kayit.get("kardiyo", [])
+    kardiyo_yapildi = st.checkbox("Bugün kardiyo yaptım", value=bool(onceki_kardiyo),
+                                  key=f"kardiyo_yap_{gun_str}")
+    kardiyo_gunluk = []
+    if kardiyo_yapildi:
+        st.caption("Her satıra bir kardiyo: tür, süre (dk) ve ortalama nabız.")
+        kardiyo_kaynak = onceki_kardiyo or [{"tur": "Tempolu yürüyüş", "sure_dk": 30, "ort_nabiz": 120}]
+        kardiyo_gunluk = st.data_editor(
+            kardiyo_kaynak,
+            num_rows="dynamic",
+            use_container_width=True,
+            column_order=("tur", "sure_dk", "ort_nabiz"),
+            column_config={
+                "tur": st.column_config.SelectboxColumn(
+                    "Tür",
+                    options=["Tempolu yürüyüş", "Koşu", "Bisiklet", "Eliptik",
+                             "Kürek", "Yüzme", "Merdiven", "HIIT", "Diğer"],
+                    width="medium"),
+                "sure_dk": st.column_config.NumberColumn("Süre (dk)", min_value=0, max_value=600, width="small"),
+                "ort_nabiz": st.column_config.NumberColumn("Ort. Nabız (bpm)", min_value=0, max_value=230, width="small"),
+            },
+            key=f"kardiyo_gunluk_{gun_str}",
+        )
+
+    # ---- Bugünün beslenmesi (gün tipine göre On/Off) — öğün öğün uyum -----
+    if dinlenme_gunu:
+        st.markdown("#### 🍽️ Bugünün Beslenmesi (Dinlenme Günü planı)")
+        on_meals = plan.get("beslenme_off", []) or plan.get("beslenme_on", []) or plan.get("beslenme", [])
+    else:
+        st.markdown("#### 🍽️ Bugünün Beslenmesi (Antrenman Günü planı)")
+        on_meals = plan.get("beslenme_on", []) or plan.get("beslenme", [])
     onceki_uyum = {u.get("ogun"): u for u in g_kayit.get("beslenme_uyum", [])}
     beslenme_uyum = []
     if not on_meals:
@@ -829,6 +886,7 @@ with tab1:
             "kalori": (int(kalori) if kalori not in (None, "") else None),
             "adim": (int(adim) if adim not in (None, "") else None),
             "antrenman_kayit": antrenman_kayit,
+            "kardiyo": (kardiyo_gunluk if kardiyo_yapildi else []),
             "beslenme_uyum": beslenme_uyum,
             "uyku_saati": uyku.strftime("%H:%M"),
             "uyanma_saati": uyanma.strftime("%H:%M"),
@@ -837,6 +895,9 @@ with tab1:
             "rpe": int(rpe),
         }
         ok, msg = save_doc(db, "gunluk_loglar", gun_str, payload)
+        # Kardiyoyu ayrıca Kardiyo sekmesine de yaz (otomatik yansısın)
+        if kardiyo_yapildi and kardiyo_gunluk:
+            save_doc(db, "kardiyo", gun_str, {"tarih": gun_str, "seanslar": kardiyo_gunluk})
         (st.success if ok else st.error)(msg)
 
 
@@ -995,8 +1056,8 @@ with tab3:
             }
             prompt = (
                 "Aşağıda son 1 ayın verileri var. Gelişim durmuş mu değerlendir ve "
-                "kurallara sadık kalarak (5 günlük üst vücut split, sınırlı karbonhidrat "
-                "kaynakları, hindi göğsü protein) somut revizyon öner.\n\n"
+                "kanıta dayalı, sporcunun profiline ve sakatlıklarına uygun somut "
+                "revizyon öner.\n\n"
                 + json.dumps(ozet, ensure_ascii=False)
             )
             with st.spinner("Veriler değerlendiriliyor..."):
@@ -1087,10 +1148,10 @@ with tab4:
 
     # ---- B) Beslenme planı --------------------------------------------------
     st.markdown("#### 🍽️ Beslenme Planı")
-    st.caption("Karbonhidrat: yalnızca pirinç, pirinç kreması, pirinç patlağı, karabuğday patlağı. Protein: hindi göğsü.")
+    st.caption("Öğün içeriklerini serbestçe girin; kalori protein+karbonhidrat+yağdan otomatik hesaplanır.")
     # ---- B) Beslenme planı (Antrenman / Dinlenme günü ayrı) -----------------
     st.markdown("#### 🍽️ Beslenme Planı")
-    st.caption("Karbonhidrat: yalnızca pirinç, pirinç kreması, pirinç patlağı, karabuğday patlağı. Protein: hindi göğsü. "
+    st.caption("Öğün içeriklerini serbestçe girin. "
                "Kalori protein+karbonhidrattan otomatik hesaplanır (≈4 kcal/g, yağ hariç).")
 
     def _beslenme_blok(varsayilan, anahtar):
