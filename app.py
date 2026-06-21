@@ -43,16 +43,39 @@ COACH_SYSTEM_PROMPT = """
 Sen kullanıcının agresif definisyon (yağ yakım) sürecini yöneten, tavizsiz ve
 gerçekçi bir profesyonel fitness koçusun. Bilimsel, net ve doğrudan konuşursun.
 
-Sen güncel spor bilimleri literatürüne (kanıta dayalı hipertrofi, mekanik gerilim, RIR/RPE prensipleri ve sporcu beslenmesi) hakim elit bir fitness ve vücut geliştirme koçusun. Temel amacın, kullanıcının verilerini kurallarla boğmak yerine, kabul görmüş bilimsel makalelere dayanarak en optimal, esnek ve sürdürülebilir şekilde yönetmektir.
-
-KULLANICI VERİSİ VE KOÇLUK ÇERÇEVESİ:
-1. ANTRENMAN BİLİMİ VE BİYOMEKANİK: Kullanıcının antrenman mimarisi sadece üst vücut hipertrofisine odaklanmaktadır (alt vücut egzersizleri programa dahil edilmez). Bu spesifik yapı nedeniyle; üst vücut kas grupları (göğüs, sırt, omuz, kollar) için eklem sağlığını (overuse riskini) koruyarak bilimsel olarak en uygun haftalık set hacmini (10-20 set arası), frekansı ve "Progressive Overload" (aşamalı yüklenme) stratejisini planla.
-2. BESLENME VE MAKRO OPTİMİZASYONU: Kullanıcının beslenmesinde KATI YASAKLAR VEYA KISITLAMALAR YOKTUR. Kullanıcı, ana tercih olarak karbonhidrat için "pirinç" ve protein için "hindi göğsü" kullanmayı sevmektedir. Bu tercihleri diyetin omurgası yap; ancak esnek diyet (flexible dieting) prensiplerine dayanarak ihtiyaç halinde yulaf, patates, tam tahıllar veya farklı protein kaynaklarını da makro hedeflerine uyacak şekilde planlayabilirsin. Literatüre uygun (örn. 2-2.2g/kg protein) bir makro dağılımı yap ve besin zamanlamasını (Nutrient Timing) performansı maksimize edecek şekilde açıkla.
-3. ADAPTASYON VE PLATO YÖNETİMİ: Haftalık form fotoğraflarını ve vücut ölçümlerini analiz et. Kilo verme veya kas gelişimi durduğunda (plato), metabolik adaptasyonu kırmak için antrenman şiddetini, RIR (Tekrar Rezervi) değerlerini veya makro döngülerini bilimsel temellere dayanarak revize et ve nedenini kullanıcıya açıkla.
-4. SAĞLIK VE SAKATLIK YÖNETİMİ: Herhangi bir ağrı veya sakatlık durumunda o bölgeyi izole eden, biyomekanik açıdan güvenli alternatifler sun.
-5. KAN TAHLİLİ VE LİMİTLER: Kan değerlerini tıbbi tanı koymadan sadece beslenme ve antrenman fizyolojisi bağlamında değerlendir. Referans dışı değerlerde doğrudan uzman bir hekime yönlendir.
-6. İLETİŞİM: Yanıtların her zaman Türkçe, net, gerçekçi ve kanıta dayalı olsun. Yapacağın her program revizyonunda "Bunu şu bilimsel nedenden ötürü yapıyoruz" mantığını kısa ve anlaşılır şekilde belirt.
-
+KESİN KURALLAR:
+1) ANTRENMAN: Programlar 5 günlük split şeklinde ve SADECE üst vücut
+   hipertrofisi odaklı olmalıdır. Hiçbir koşulda alt vücut / bacak egzersizi
+   (squat, leg press, lunge, deadlift dahil) tavsiye edilmez.
+2) BESLENME — KARBONHİDRAT: Karbonhidrat kaynakları KATI bir şekilde SADECE
+   şunlarla sınırlıdır: pirinç, pirinç kreması, pirinç patlağı ve karabuğday
+   patlağı. Yulaf, ekmek, makarna, patates veya başka herhangi bir kaynak
+   KESİNLİKLE önerilmez.
+3) BESLENME — PROTEİN: Protein ağırlıklı olarak HİNDİ GÖĞSÜ üzerinden
+   hesaplanır.
+4) FOTOĞRAF ANALİZİ: Kullanıcı haftalık form/postür fotoğrafı yüklediğinde
+   asimetri ve postür kontrolü yap. Gelişim durmuşsa üst vücut programını ve
+   katı makro planını revize et.
+5) SAĞLIK & SAKATLIK: Kullanıcının aktif sakatlıkları varsa o bölgeyi
+   zorlayan/ağrıtan egzersizleri ÖNERME; yerine güvenli alternatif ver.
+   Program ve beslenme planını daima sakatlık durumuna göre uyarla.
+6) KAN TAHLİLİ: Kan değerlerini yorumlarken bir DOKTOR DEĞİLSİN. Referans
+   dışı (yüksek/düşük) değerleri açıkça işaretle ve "bunu mutlaka bir hekime
+   danışın" uyarısı ver. Tanı KOYMA, ilaç önerme. Sadece beslenme/antrenmanı
+   bu değerleri gözeterek (örn. demir/D vitamini düşükse beslenme notu)
+   genel çerçevede uyarlarsın. Kritik görünen değerlerde derhal hekime
+   yönlendir.
+7) BİLİMSEL DAYANAK: Önerilerin güçlü kanıta dayansın — meta-analizler ve
+   geniş, tekrarlanmış çalışmaların ortak görüşüne uy. 3-5 kişilik, zayıf veya
+   tek seferlik çalışmalara ya da "bro-science"a güvenme. Bir konuda kanıt zayıf
+   veya tartışmalıysa bunu açıkça söyle. KAYNAK UYDURMA: var olmayan makale,
+   yazar, dergi veya sayı UYDURMA; emin değilsen "bu kesin kanıtlı değil" de.
+8) TEMBEL ÖNERİ YASAK: Kolaya kaçıp her şeye "yulaf ve whey protein" deme.
+   Karbonhidrat sadece izinli kaynaklardan (pirinç vb.), protein hindi göğsü
+   ağırlıklı olacak; whey/yulaf varsayılan çözüm olarak sunulmaz.
+9) Tüm cevapların TÜRKÇE olmalı. Gereksiz övgüden kaçın; kullanıcıyı hedefe
+   odaklı tut. Sağlık açısından kritik bir uyarı görürsen (örn. aşırı düşük
+   kalori, sakatlık belirtisi) bunu açıkça belirt.
 """.strip()
 
 
@@ -151,23 +174,59 @@ st.markdown(PANDA_CSS, unsafe_allow_html=True)
 
 
 # =============================================================================
-# 2.5) GİRİŞ ŞİFRESİ (basit koruma)
+# 2.5) GİRİŞ ŞİFRESİ + "BENİ HATIRLA" (30 gün)
 # =============================================================================
+import hashlib
+
+try:
+    import extra_streamlit_components as stx
+    _cookie_mgr = stx.CookieManager(key="ai_koc_cookies")
+except Exception:
+    _cookie_mgr = None
+
+REMEMBER_COOKIE = "ai_koc_remember"
+REMEMBER_GUN = 30
+
+
+def _remember_token() -> str:
+    secret = st.secrets.get("APP_PASSWORD", "")
+    return hashlib.sha256(("ai_koc_remember::" + secret).encode()).hexdigest()
+
+
 def check_password() -> bool:
-    """Şifre ekranı. APP_PASSWORD secret'i tanımlı değilse (yerel kullanım) atlanır."""
+    """Şifre ekranı + 'beni bu cihazda hatırla' (çerezle 30 gün)."""
     expected = st.secrets.get("APP_PASSWORD", "")
     if not expected:
         return True  # şifre tanımlı değil -> serbest (örn. kendi bilgisayarınızda)
     if st.session_state.get("auth_ok"):
         return True
 
+    # Çerezde geçerli hatırlama varsa otomatik giriş
+    if _cookie_mgr is not None:
+        try:
+            if _cookie_mgr.get(REMEMBER_COOKIE) == _remember_token():
+                st.session_state["auth_ok"] = True
+                return True
+        except Exception:
+            pass
+
     st.markdown("## 🐼 Giriş")
     st.caption("Bu alan kişiseldir. Devam etmek için şifrenizi girin.")
     pwd = st.text_input("Şifre", type="password", label_visibility="collapsed",
                         placeholder="Şifre")
-    if st.button("Giriş yap"):
+    hatirla = st.checkbox("Beni bu cihazda hatırla (30 gün)", value=True)
+    if st.button("Giriş yap", type="primary"):
         if pwd == expected:
             st.session_state["auth_ok"] = True
+            if hatirla and _cookie_mgr is not None:
+                try:
+                    _cookie_mgr.set(
+                        REMEMBER_COOKIE, _remember_token(),
+                        expires_at=datetime.now() + timedelta(days=REMEMBER_GUN),
+                        key="set_remember",
+                    )
+                except Exception:
+                    pass
             st.rerun()
         else:
             st.error("Şifre yanlış.")
@@ -234,12 +293,14 @@ def ask_coach(model, user_prompt: str) -> str:
         return f"⚠️ Gemini hatası: {e}"
 
 
-def analyze_form_photo(model, image, measurements: dict, history_note: str = "") -> str:
-    """Gemini Vision ile form/postür fotoğrafını analiz eder."""
+def analyze_form_photo(model, images, measurements: dict, history_note: str = "") -> str:
+    """Gemini Vision ile bir veya birden fazla form/postür fotoğrafını analiz eder."""
     if model is None:
         return "⚠️ Gemini yapılandırılmamış. Fotoğraf analizi yapılamadı."
+    if not isinstance(images, (list, tuple)):
+        images = [images]
     prompt = f"""
-Aşağıda kullanıcının haftalık form/postür fotoğrafı var.
+Aşağıda kullanıcının haftalık form/postür fotoğraf(lar)ı var (farklı açılar olabilir).
 Güncel vücut ölçüleri (cm): {json.dumps(measurements, ensure_ascii=False)}
 {history_note}
 
@@ -249,13 +310,31 @@ Sistem komutundaki kurallara göre:
 3) Definisyon/yağ oranı hakkında gerçekçi bir gözlem yap.
 4) Gelişim durmuş gibi görünüyorsa üst vücut programı ve katı makro planı için
    somut revizyon öner (kurallar dışına çıkmadan).
-Kısa, maddeli ve doğrudan yaz.
+Tüm fotoğrafları birlikte değerlendir. Kısa, maddeli ve doğrudan yaz.
 """.strip()
     try:
-        resp = model.generate_content([prompt, image])
+        resp = model.generate_content([prompt] + list(images))
         return resp.text
     except Exception as e:
         return f"⚠️ Gemini Vision hatası: {e}"
+
+
+def _img_to_b64(img, max_px=800, quality=70) -> str:
+    """Görseli küçültüp JPEG base64 metnine çevirir (Firestore'a sığsın diye)."""
+    import io
+    import base64
+    img = img.convert("RGB")
+    img.thumbnail((max_px, max_px))
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=quality)
+    return base64.b64encode(buf.getvalue()).decode()
+
+
+def _b64_to_img(b64: str):
+    import io
+    import base64
+    return Image.open(io.BytesIO(base64.b64decode(b64)))
+
 
 
 def estimate_calories(model, meals: list) -> str:
@@ -271,7 +350,63 @@ def estimate_calories(model, meals: list) -> str:
     return ask_coach(model, prompt)
 
 
-def read_blood_image(model, image) -> str:
+def estimate_calories_image(model, images: list, note: str = "") -> str:
+    """Yemek fotoğraf(lar)ından yaklaşık kalori/makro tahmini yapar."""
+    if model is None:
+        return "⚠️ Gemini yapılandırılmamış."
+    ek = f"\nKullanıcı notu (porsiyon/gram): {note}" if note.strip() else ""
+    prompt = (
+        "Bu fotoğraf(lar)daki yemeğin yaklaşık kalorisini ve makrolarını "
+        "(protein/karbonhidrat/yağ, gram) tahmin et. Porsiyonu görselden tahmin et; "
+        "kesin olmadığını belirt. Kısa yaz ve sonuna 'TOPLAM_KCAL: <sayı>' ekle." + ek
+    )
+    try:
+        resp = model.generate_content([prompt] + list(images))
+        return resp.text
+    except Exception as e:
+        return f"⚠️ Gemini Vision hatası: {e}"
+
+
+def compute_macros_from_content(model, meals: list):
+    """Öğün içeriğindeki gramlardan protein/karb/kalori hesaplatır (JSON döner)."""
+    if model is None:
+        return None, "Gemini yapılandırılmamış."
+    veri = [{"ogun": m.get("ogun", ""), "icerik": m.get("icerik", "")} for m in meals]
+    prompt = (
+        "Aşağıda öğünler var (ogun + icerik). Her öğünün içeriğindeki gram bilgilerinden "
+        "yola çıkarak protein (g), karbonhidrat (g) ve kalori (kcal) hesapla. "
+        "SADECE geçerli bir JSON listesi döndür (başka metin/``` olmadan), şu alanlarla: "
+        '[{"ogun":"...","icerik":"...","protein_g":0,"karb_g":0,"kcal":0}]. '
+        "Sayılar tam sayı olsun. Gram belirtilmemişse makul tahmin yap.\n\n"
+        + json.dumps(veri, ensure_ascii=False)
+    )
+    ham = ask_coach(model, prompt)
+    temiz = (ham or "").replace("```json", "").replace("```", "").strip()
+    bas, son = temiz.find("["), temiz.rfind("]")
+    if bas != -1 and son != -1 and son > bas:
+        temiz = temiz[bas:son + 1]
+    try:
+        out = json.loads(temiz)
+        if isinstance(out, list) and out:
+            return out, None
+        return None, "Beklenen formatta veri çıkmadı."
+    except Exception:
+        return None, f"Hesaplanamadı. Koç cevabı: «{(ham or '').strip()[:200]}»"
+
+
+def _say(x):
+    try:
+        return float(x)
+    except Exception:
+        return 0.0
+
+
+def _parse_saat(s, varsayilan="08:00"):
+    """'HH:MM' metnini time'a çevirir; olmazsa varsayılanı verir."""
+    try:
+        return datetime.strptime(str(s), "%H:%M").time()
+    except Exception:
+        return datetime.strptime(varsayilan, "%H:%M").time()
     """Kan tahlili fotoğrafını/ekran görüntüsünü Gemini Vision ile okur ve özetler."""
     if model is None:
         return "⚠️ Gemini yapılandırılmamış."
@@ -453,10 +588,19 @@ db, db_err = init_firestore()
 with st.sidebar:
     st.markdown("## 🐼 AI Fitness Koçu")
     st.caption("Agresif definisyon · üst vücut odaklı")
+    if st.secrets.get("APP_PASSWORD", ""):
+        if st.button("Çıkış yap", use_container_width=True):
+            if _cookie_mgr is not None:
+                try:
+                    _cookie_mgr.delete(REMEMBER_COOKIE, key="del_remember")
+                except Exception:
+                    pass
+            st.session_state.pop("auth_ok", None)
+            st.rerun()
     st.divider()
 
     st.markdown("**Bağlantı Durumu**")
-    st.write("Gemini 1.5 Pro:  " + ("🟢 Aktif" if model else "🔴 Kapalı"))
+    st.write("Gemini:  " + ("🟢 Aktif" if model else "🔴 Kapalı"))
     st.write("Firestore:  " + ("🟢 Aktif" if db else "🔴 Kapalı"))
     if gem_err:
         st.caption(f"ℹ️ {gem_err}")
@@ -496,18 +640,23 @@ with tab1:
     st.subheader("Günlük Kayıt")
     col_a, col_b = st.columns([1, 1])
     gun = col_a.date_input("Tarih", value=date.today(), key="gunluk_tarih")
-    kilo = col_b.number_input("Sabah kilosu (kg)", min_value=30.0, max_value=250.0, step=0.1, value=80.0)
+    gun_str = gun.isoformat()
+
+    # Seçilen tarihin kayıtlı verisini getir (varsa forma yüklenir)
+    g_kayit = load_doc(db, "gunluk_loglar", gun_str)
+    if g_kayit:
+        col_b.caption("✅ Bu tarihe ait kayıt yüklendi.")
+
+    kilo = col_b.number_input("Sabah kilosu (kg)", min_value=30.0, max_value=250.0, step=0.1,
+                              value=float(g_kayit.get("kilo", 80.0)), key=f"kilo_{gun_str}")
 
     st.markdown("#### 🍽️ Öğünler")
     st.caption("Saat ve detaylı içerik girin. Satır ekleyip çıkarabilirsiniz.")
-    default_meals = st.session_state.get(
-        "meals_df",
-        [
-            {"saat": "08:00", "icerik": ""},
-            {"saat": "13:00", "icerik": ""},
-            {"saat": "19:00", "icerik": ""},
-        ],
-    )
+    default_meals = g_kayit.get("ogunler", [
+        {"saat": "08:00", "icerik": ""},
+        {"saat": "13:00", "icerik": ""},
+        {"saat": "19:00", "icerik": ""},
+    ])
     meals = st.data_editor(
         default_meals,
         num_rows="dynamic",
@@ -516,34 +665,59 @@ with tab1:
             "saat": st.column_config.TextColumn("Saat", width="small"),
             "icerik": st.column_config.TextColumn("İçerik (besin + gram)", width="large"),
         },
-        key="meals_editor",
+        key=f"meals_editor_{gun_str}",
     )
 
     c1, c2 = st.columns([1, 2])
-    if c1.button("🤖 AI ile kalori tahmini"):
+    if c1.button("🤖 Öğünlerden kalori tahmini"):
         with st.spinner("Kalori hesaplanıyor..."):
             st.session_state["kcal_tahmin"] = estimate_calories(model, meals)
     if st.session_state.get("kcal_tahmin"):
         c2.info(st.session_state["kcal_tahmin"])
 
-    kalori = st.number_input("Toplam alınan kalori (kcal)", min_value=0, max_value=8000, step=50, value=2000)
+    # Fotoğraftan kalori tahmini
+    with st.expander("📷 Fotoğraftan kalori tahmini"):
+        st.caption("Tabağın fotoğrafını çekin/yükleyin. İsterseniz porsiyon notu ekleyin (örn. '200g hindi, 1 kase pirinç').")
+        yemek_fotolari = st.file_uploader("Yemek fotoğrafı", type=["jpg", "jpeg", "png"],
+                                          accept_multiple_files=True, key=f"yemek_foto_{gun_str}")
+        yemek_not = st.text_input("Porsiyon notu (isteğe bağlı)", key=f"yemek_not_{gun_str}")
+        if yemek_fotolari and PIL_OK:
+            kucuk = [Image.open(f) for f in yemek_fotolari]
+            st.image(kucuk, width=140)
+        if st.button("🍽️ Fotoğraftan kaloriyi tahmin et"):
+            if not yemek_fotolari:
+                st.warning("Önce bir fotoğraf ekleyin.")
+            elif PIL_OK:
+                imgs = [Image.open(f) for f in yemek_fotolari]
+                with st.spinner("Görsel analiz ediliyor..."):
+                    st.session_state["kcal_foto_tahmin"] = estimate_calories_image(model, imgs, yemek_not)
+        if st.session_state.get("kcal_foto_tahmin"):
+            st.info(st.session_state["kcal_foto_tahmin"])
+
+    kalori = st.number_input("Toplam alınan kalori (kcal)", min_value=0, max_value=8000, step=50,
+                             value=int(g_kayit.get("kalori", 2000)), key=f"kalori_{gun_str}")
 
     st.markdown("#### 😴 Uyku & Aktivite")
     s1, s2, s3 = st.columns(3)
-    uyku = s1.time_input("Uyku saati", value=datetime.strptime("23:30", "%H:%M").time())
-    uyanma = s2.time_input("Uyanma saati", value=datetime.strptime("07:30", "%H:%M").time())
-    adim = s3.number_input("Adım sayısı", min_value=0, max_value=60000, step=500, value=8000)
+    uyku = s1.time_input("Uyku saati", value=_parse_saat(g_kayit.get("uyku_saati"), "23:30"),
+                         key=f"uyku_{gun_str}")
+    uyanma = s2.time_input("Uyanma saati", value=_parse_saat(g_kayit.get("uyanma_saati"), "07:30"),
+                           key=f"uyanma_{gun_str}")
+    adim = s3.number_input("Adım sayısı", min_value=0, max_value=60000, step=500,
+                           value=int(g_kayit.get("adim", 8000)), key=f"adim_{gun_str}")
 
     st.markdown("#### 🏋️ Antrenman")
     t1, t2, t3 = st.columns(3)
-    ant_bas = t1.time_input("Başlangıç", value=datetime.strptime("18:00", "%H:%M").time())
-    ant_bit = t2.time_input("Bitiş", value=datetime.strptime("19:15", "%H:%M").time())
-    rpe = t3.slider("Zorluk (RPE)", min_value=1, max_value=10, value=8,
-                    help="Algılanan efor: 1 = çok kolay, 10 = maksimal")
+    ant_bas = t1.time_input("Başlangıç", value=_parse_saat(g_kayit.get("antrenman_baslangic"), "18:00"),
+                            key=f"antbas_{gun_str}")
+    ant_bit = t2.time_input("Bitiş", value=_parse_saat(g_kayit.get("antrenman_bitis"), "19:15"),
+                            key=f"antbit_{gun_str}")
+    rpe = t3.slider("Zorluk (RPE)", min_value=1, max_value=10, value=int(g_kayit.get("rpe", 8)),
+                    key=f"rpe_{gun_str}", help="Algılanan efor: 1 = çok kolay, 10 = maksimal")
 
     if st.button("💾 Günlük Veriyi Firebase'e Kaydet", type="primary"):
         payload = {
-            "tarih": gun.isoformat(),
+            "tarih": gun_str,
             "kilo": float(kilo),
             "kalori": int(kalori),
             "ogunler": meals,
@@ -554,7 +728,7 @@ with tab1:
             "antrenman_bitis": ant_bit.strftime("%H:%M"),
             "rpe": int(rpe),
         }
-        ok, msg = save_doc(db, "gunluk_loglar", gun.isoformat(), payload)
+        ok, msg = save_doc(db, "gunluk_loglar", gun_str, payload)
         (st.success if ok else st.error)(msg)
         if not ok and db is None:
             with st.expander("Kaydedilecek veri (önizleme)"):
@@ -567,47 +741,81 @@ with tab1:
 with tab2:
     st.subheader("Haftalık Check-in")
     htarih = st.date_input("Check-in tarihi", value=date.today(), key="haftalik_tarih")
+    h_str = htarih.isoformat()
+
+    h_kayit = load_doc(db, "haftalik_checkin", h_str)
+    if h_kayit:
+        st.caption("✅ Bu tarihe ait check-in yüklendi.")
+    onceki_olcu = h_kayit.get("olculer", {})
 
     st.markdown("#### 📏 Vücut Ölçüleri (cm)")
     m1, m2, m3, m4 = st.columns(4)
-    omuz = m1.number_input("Omuz", min_value=0.0, max_value=200.0, step=0.5, value=120.0)
-    gogus = m2.number_input("Göğüs", min_value=0.0, max_value=200.0, step=0.5, value=105.0)
-    bel = m3.number_input("Bel", min_value=0.0, max_value=200.0, step=0.5, value=80.0)
-    kol = m4.number_input("Kol", min_value=0.0, max_value=100.0, step=0.5, value=38.0)
+    omuz = m1.number_input("Omuz", min_value=0.0, max_value=200.0, step=0.5,
+                           value=float(onceki_olcu.get("omuz", 120.0)), key=f"omuz_{h_str}")
+    gogus = m2.number_input("Göğüs", min_value=0.0, max_value=200.0, step=0.5,
+                            value=float(onceki_olcu.get("gogus", 105.0)), key=f"gogus_{h_str}")
+    bel = m3.number_input("Bel", min_value=0.0, max_value=200.0, step=0.5,
+                          value=float(onceki_olcu.get("bel", 80.0)), key=f"bel_{h_str}")
+    kol = m4.number_input("Kol", min_value=0.0, max_value=100.0, step=0.5,
+                          value=float(onceki_olcu.get("kol", 38.0)), key=f"kol_{h_str}")
     olculer = {"omuz": omuz, "gogus": gogus, "bel": bel, "kol": kol}
 
-    st.markdown("#### 🖼️ Form / Postür Fotoğrafı")
-    foto = st.file_uploader("Fotoğraf yükle (jpg / png)", type=["jpg", "jpeg", "png"])
+    st.markdown("#### 🖼️ Form / Postür Fotoğrafları")
 
-    img = None
-    if foto is not None:
-        if PIL_OK:
-            img = Image.open(foto)
-            st.image(img, caption="Yüklenen form fotoğrafı", width=320)
-        else:
-            st.warning("Pillow kurulu değil; görsel önizlenemiyor ama analiz denenecek.")
+    # Daha önce kaydedilmiş fotoğraflar (o tarihe ait) gösterilir
+    kayitli_fotolar = h_kayit.get("fotolar", [])
+    if kayitli_fotolar and PIL_OK:
+        st.caption("Bu tarihe kaydedilmiş fotoğraflar:")
+        try:
+            st.image([_b64_to_img(b) for b in kayitli_fotolar], width=140)
+        except Exception:
+            st.caption("(Kayıtlı fotoğraflar gösterilemedi.)")
+
+    foto_list = st.file_uploader("Yeni fotoğraf(lar) yükle (birden fazla seçebilirsiniz)",
+                                 type=["jpg", "jpeg", "png"], accept_multiple_files=True,
+                                 key=f"form_foto_{h_str}")
+
+    yeni_imgs = []
+    if foto_list and PIL_OK:
+        yeni_imgs = [Image.open(f) for f in foto_list]
+        st.caption("Yeni yüklenenler:")
+        st.image(yeni_imgs, width=140)
 
     cc1, cc2 = st.columns(2)
     if cc1.button("🔍 Gemini Vision ile Analiz Et"):
-        if img is None:
-            st.warning("Önce bir fotoğraf yükleyin.")
+        analiz_imgs = yeni_imgs[:]
+        # yeni yoksa kayıtlı fotoğrafları analiz et
+        if not analiz_imgs and kayitli_fotolar and PIL_OK:
+            try:
+                analiz_imgs = [_b64_to_img(b) for b in kayitli_fotolar]
+            except Exception:
+                analiz_imgs = []
+        if not analiz_imgs:
+            st.warning("Önce en az bir fotoğraf yükleyin.")
         else:
             with st.spinner("Postür ve asimetri analizi yapılıyor..."):
-                analiz = analyze_form_photo(model, img, olculer)
-                st.session_state["foto_analiz"] = analiz
+                st.session_state["foto_analiz"] = analyze_form_photo(model, analiz_imgs, olculer)
 
     if st.session_state.get("foto_analiz"):
         st.markdown("##### 🐼 Koç Analizi")
         st.markdown(f'<div class="panda-card">{st.session_state["foto_analiz"]}</div>', unsafe_allow_html=True)
 
     if cc2.button("💾 Check-in'i Firebase'e Kaydet", type="primary"):
+        # Yeni fotoğraflar varsa onları, yoksa eskileri sakla (küçültülmüş base64)
+        if yeni_imgs and PIL_OK:
+            try:
+                foto_b64 = [_img_to_b64(im) for im in yeni_imgs]
+            except Exception:
+                foto_b64 = kayitli_fotolar
+        else:
+            foto_b64 = kayitli_fotolar
         payload = {
-            "tarih": htarih.isoformat(),
+            "tarih": h_str,
             "olculer": olculer,
-            "foto_yuklendi": foto is not None,
+            "fotolar": foto_b64,
             "foto_analiz": st.session_state.get("foto_analiz", ""),
         }
-        ok, msg = save_doc(db, "haftalik_checkin", htarih.isoformat(), payload)
+        ok, msg = save_doc(db, "haftalik_checkin", h_str, payload)
         (st.success if ok else st.error)(msg)
 
 
@@ -723,7 +931,7 @@ with tab4:
                     if veri.get("program"):
                         st.session_state["program_data"] = veri["program"]
                     if veri.get("beslenme"):
-                        st.session_state["beslenme_data"] = veri["beslenme"]
+                        st.session_state["beslenme_data_on"] = veri["beslenme"]
                     st.success("Tablolar dolduruldu. Aşağıda kontrol edip düzenleyebilirsiniz.")
                     st.rerun()
                 else:
@@ -739,80 +947,112 @@ with tab4:
         {"gun": "Perşembe",  "odak": "Kol (Biceps/Triceps)", "egzersizler": ""},
         {"gun": "Cuma",      "odak": "Göğüs/Sırt (tekrar)",  "egzersizler": ""},
     ]))
-    program = st.data_editor(
-        default_program,
-        num_rows="dynamic",
-        use_container_width=True,
-        column_config={
-            "gun": st.column_config.TextColumn("Gün", width="small"),
-            "odak": st.column_config.TextColumn("Odak Bölge", width="small"),
-            "egzersizler": st.column_config.TextColumn("Egzersizler (set x tekrar)", width="large"),
-        },
-        key="program_editor",
-    )
+    # Önce OKUNAKLI görünüm (öne çıkan), düzenleme tablosu altta gizli durur
+    st.markdown("##### 📖 Program")
+    _bos = True
+    for satir in default_program:
+        gun = str(satir.get("gun", "")).strip()
+        odak = str(satir.get("odak", "")).strip()
+        egz = str(satir.get("egzersizler", "")).strip()
+        if not (gun or egz):
+            continue
+        _bos = False
+        st.markdown(f"**{gun} — {odak}**")
+        parcalar = [e.strip() for e in egz.replace(",", "\n").split("\n") if e.strip()]
+        if parcalar:
+            st.markdown("\n".join(f"- {e}" for e in parcalar))
+        st.markdown("")
+    if _bos:
+        st.caption("Henüz program yok. Aşağıdaki tablodan girin veya Excel yükleyin.")
 
-    # Okunaklı önizleme: her gün ve egzersizleri alt alta
-    with st.expander("📖 Programı okunaklı görünümde aç", expanded=True):
-        for satir in program:
-            gun = str(satir.get("gun", "")).strip()
-            odak = str(satir.get("odak", "")).strip()
-            egz = str(satir.get("egzersizler", "")).strip()
-            if not (gun or egz):
-                continue
-            st.markdown(f"**{gun} — {odak}**")
-            # virgül veya yeni satıra göre böl, her egzersizi ayrı satırda göster
-            parcalar = [e.strip() for e in egz.replace(",", "\n").split("\n") if e.strip()]
-            if parcalar:
-                st.markdown("\n".join(f"- {e}" for e in parcalar))
-            st.markdown("")
+    with st.expander("✏️ Tabloda düzenle", expanded=False):
+        program = st.data_editor(
+            default_program,
+            num_rows="dynamic",
+            use_container_width=True,
+            column_order=("gun", "odak", "egzersizler"),
+            column_config={
+                "gun": st.column_config.TextColumn("Gün", width="small"),
+                "odak": st.column_config.TextColumn("Odak Bölge", width="medium"),
+                "egzersizler": st.column_config.TextColumn("Egzersizler (her satır ayrı)", width="large"),
+            },
+            key="program_editor",
+        )
+    st.session_state["program_data"] = program
 
     # ---- B) Beslenme planı --------------------------------------------------
     st.markdown("#### 🍽️ Beslenme Planı")
     st.caption("Karbonhidrat: yalnızca pirinç, pirinç kreması, pirinç patlağı, karabuğday patlağı. Protein: hindi göğsü.")
-    default_diyet = st.session_state.get("beslenme_data", kayitli.get("beslenme", [
+    # ---- B) Beslenme planı (Antrenman / Dinlenme günü ayrı) -----------------
+    st.markdown("#### 🍽️ Beslenme Planı")
+    st.caption("Karbonhidrat: yalnızca pirinç, pirinç kreması, pirinç patlağı, karabuğday patlağı. Protein: hindi göğsü. "
+               "Kalori protein+karbonhidrattan otomatik hesaplanır (≈4 kcal/g, yağ hariç).")
+
+    def _beslenme_blok(varsayilan, anahtar):
+        """Bir gün tipi için beslenme tablosu + makro hesaplama düğmesi. Düzenlenmiş listeyi döndürür."""
+        sess_key = f"beslenme_data_{anahtar}"
+        kaynak = st.session_state.get(sess_key, varsayilan)
+
+        if st.button("🤖 İçerikten makro/kalori hesapla", key=f"makro_btn_{anahtar}"):
+            with st.spinner("İçerikten makrolar hesaplanıyor..."):
+                yeni, hata = compute_macros_from_content(model, kaynak)
+            if yeni:
+                st.session_state[sess_key] = yeni
+                st.rerun()
+            else:
+                st.error(hata or "Hesaplanamadı.")
+
+        duzenlenen = st.data_editor(
+            kaynak,
+            num_rows="dynamic",
+            use_container_width=True,
+            column_order=("ogun", "icerik", "protein_g", "karb_g", "kcal"),
+            column_config={
+                "ogun": st.column_config.TextColumn("Öğün", width="small"),
+                "icerik": st.column_config.TextColumn("İçerik (besin + gram)", width="large"),
+                "protein_g": st.column_config.NumberColumn("Protein (g)", width="small"),
+                "karb_g": st.column_config.NumberColumn("Karb (g)", width="small"),
+                "kcal": st.column_config.NumberColumn("Kalori (oto)", width="small", disabled=True),
+            },
+            key=f"beslenme_editor_{anahtar}",
+        )
+        t_kcal, t_pro = 0, 0
+        for _r in duzenlenen:
+            _r["kcal"] = round((_say(_r.get("protein_g")) + _say(_r.get("karb_g"))) * 4)
+            t_kcal += _r["kcal"]
+            t_pro += _say(_r.get("protein_g"))
+        st.session_state[sess_key] = duzenlenen
+        c_a, c_b = st.columns(2)
+        c_a.metric("Toplam kalori (oto)", f"{t_kcal} kcal")
+        c_b.metric("Toplam protein", f"{int(t_pro)} g")
+        return duzenlenen
+
+    # Eski tek liste varsa onu Antrenman gününe taşı (geriye dönük uyum)
+    eski_tek = kayitli.get("beslenme", [])
+    varsayilan_on = kayitli.get("beslenme_on", eski_tek or [
         {"ogun": "1. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
         {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
         {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-    ]))
-    st.caption("Kalori, protein ve karbonhidrattan OTOMATİK hesaplanır (≈ 4 kcal/g). Yağ dahil değildir.")
-    beslenme = st.data_editor(
-        default_diyet,
-        num_rows="dynamic",
-        use_container_width=True,
-        column_config={
-            "ogun": st.column_config.TextColumn("Öğün", width="small"),
-            "icerik": st.column_config.TextColumn("İçerik", width="large"),
-            "protein_g": st.column_config.NumberColumn("Protein (g)", width="small"),
-            "karb_g": st.column_config.NumberColumn("Karb (g)", width="small"),
-            "kcal": st.column_config.NumberColumn("Kalori (oto)", width="small", disabled=True),
-        },
-        key="beslenme_editor",
-    )
+    ])
+    varsayilan_off = kayitli.get("beslenme_off", [
+        {"ogun": "1. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
+        {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
+        {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
+    ])
 
-    # Kaloriyi protein+karbonhidrattan otomatik hesapla ve toplamı göster
-    def _say(x):
-        try:
-            return float(x)
-        except Exception:
-            return 0.0
-    toplam_kcal = 0
-    toplam_pro = 0
-    for _r in beslenme:
-        _kcal = round((_say(_r.get("protein_g")) + _say(_r.get("karb_g"))) * 4)
-        _r["kcal"] = _kcal
-        toplam_kcal += _kcal
-        toplam_pro += _say(_r.get("protein_g"))
-    st.session_state["beslenme_data"] = beslenme
-    mk1, mk2 = st.columns(2)
-    mk1.metric("Toplam kalori (oto)", f"{toplam_kcal} kcal")
-    mk2.metric("Toplam protein", f"{int(toplam_pro)} g")
+    bes_on_tab, bes_off_tab = st.tabs(["🏋️ Antrenman Günü (On)", "😴 Dinlenme Günü (Off)"])
+    with bes_on_tab:
+        beslenme_on = _beslenme_blok(varsayilan_on, "on")
+    with bes_off_tab:
+        beslenme_off = _beslenme_blok(varsayilan_off, "off")
 
     notlar = st.text_area("Ek notlar (takviye, hedef kalori, vb.)", value=kayitli.get("notlar", ""))
 
     if st.button("💾 Program & Planı Kaydet", type="primary"):
         payload = {
             "program": program,
-            "beslenme": beslenme,
+            "beslenme_on": beslenme_on,
+            "beslenme_off": beslenme_off,
             "notlar": notlar,
             "tarih": date.today().isoformat(),
         }
@@ -835,7 +1075,8 @@ with tab4:
     saglik_kayit = load_doc(db, "saglik", "guncel")
     bağlam = {
         "program": program,
-        "beslenme": beslenme,
+        "beslenme_antrenman_gunu": beslenme_on,
+        "beslenme_dinlenme_gunu": beslenme_off,
         "notlar": notlar,
         "son_7_gun": son_loglar,
         "aktif_sakatliklar": saglik_kayit.get("sakatliklar", []),
