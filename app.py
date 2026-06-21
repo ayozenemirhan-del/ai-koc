@@ -377,10 +377,12 @@ def compute_macros_from_content(model, meals: list):
     veri = [{"ogun": m.get("ogun", ""), "icerik": m.get("icerik", "")} for m in meals]
     prompt = (
         "Aşağıda öğünler var (ogun + icerik). Her öğünün içeriğindeki gram bilgilerinden "
-        "yola çıkarak protein (g), karbonhidrat (g) ve kalori (kcal) hesapla. "
+        "yola çıkarak protein (g), karbonhidrat (g), YAĞ (g) ve kalori (kcal) hesapla. "
+        "Yağ kaynaklarını (badem ezmesi, zeytinyağı, yumurta sarısı vb.) sakın atlama. "
         "SADECE geçerli bir JSON listesi döndür (başka metin/``` olmadan), şu alanlarla: "
-        '[{"ogun":"...","icerik":"...","protein_g":0,"karb_g":0,"kcal":0}]. '
-        "Sayılar tam sayı olsun. Gram belirtilmemişse makul tahmin yap.\n\n"
+        '[{"ogun":"...","icerik":"...","protein_g":0,"karb_g":0,"yag_g":0,"kcal":0}]. '
+        "Kalori = protein*4 + karbonhidrat*4 + yağ*9. Sayılar tam sayı olsun. "
+        "Gram belirtilmemişse makul tahmin yap.\n\n"
         + json.dumps(veri, ensure_ascii=False)
     )
     ham = ask_coach(model, prompt)
@@ -437,7 +439,7 @@ def excel_to_plan(model, sayfalar_metni: str):
         "(başka metin veya ``` olmadan):\n"
         '{\n'
         '  "program": [{"gun":"Pazartesi","odak":"Göğüs","egzersizler":"1. Bench 4x10\\n2. Incline Fly 3x12"}],\n'
-        '  "beslenme": [{"ogun":"1. Öğün","icerik":"...","protein_g":0,"karb_g":0,"kcal":0}]\n'
+        '  "beslenme": [{"ogun":"1. Öğün","icerik":"...","protein_g":0,"karb_g":0,"yag_g":0,"kcal":0}]\n'
         '}\n'
         "Kurallar: program SADECE üst vücut olsun, bacak/alt vücut hareketi varsa atla. "
         "'egzersizler' alanında her egzersizi AYRI SATIRA yaz (aralarına \\n koy), virgülle yan yana DİZME. "
@@ -1009,19 +1011,23 @@ with tab4:
             kaynak,
             num_rows="dynamic",
             use_container_width=True,
-            column_order=("ogun", "icerik", "protein_g", "karb_g", "kcal"),
+            column_order=("ogun", "icerik", "protein_g", "karb_g", "yag_g", "kcal"),
             column_config={
                 "ogun": st.column_config.TextColumn("Öğün", width="small"),
                 "icerik": st.column_config.TextColumn("İçerik (besin + gram)", width="large"),
                 "protein_g": st.column_config.NumberColumn("Protein (g)", width="small"),
                 "karb_g": st.column_config.NumberColumn("Karb (g)", width="small"),
+                "yag_g": st.column_config.NumberColumn("Yağ (g)", width="small"),
                 "kcal": st.column_config.NumberColumn("Kalori (oto)", width="small", disabled=True),
             },
             key=f"beslenme_editor_{anahtar}",
         )
         t_kcal, t_pro = 0, 0
         for _r in duzenlenen:
-            _r["kcal"] = round((_say(_r.get("protein_g")) + _say(_r.get("karb_g"))) * 4)
+            _r["kcal"] = round(
+                (_say(_r.get("protein_g")) + _say(_r.get("karb_g"))) * 4
+                + _say(_r.get("yag_g")) * 9
+            )
             t_kcal += _r["kcal"]
             t_pro += _say(_r.get("protein_g"))
         st.session_state[sess_key] = duzenlenen
@@ -1038,9 +1044,9 @@ with tab4:
         return False
 
     bos3 = [
-        {"ogun": "1. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-        {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-        {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
+        {"ogun": "1. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "yag_g": 0, "kcal": 0},
+        {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "yag_g": 0, "kcal": 0},
+        {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "yag_g": 0, "kcal": 0},
     ]
     eski_tek = kayitli.get("beslenme", [])
     kayit_on = kayitli.get("beslenme_on", [])
