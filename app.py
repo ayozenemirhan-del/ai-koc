@@ -47,9 +47,11 @@ KESİN KURALLAR:
 1) ANTRENMAN: Programlar 5 günlük split şeklinde ve SADECE üst vücut
    hipertrofisi odaklı olmalıdır. Hiçbir koşulda alt vücut / bacak egzersizi
    (squat, leg press, lunge, deadlift dahil) tavsiye edilmez.
-2) BESLENME — KARBONHİDRAT: Karbonhidrat kaynakları yulaf hariç tüm önerilere açıktır. 
-Program için  en verimli seçenekler kişinin hedefine ve yağ oranına göre değerlendirilir.
-3) BESLENME — PROTEİN: Protein ağırlıklı olarak 1. tercih HİNDİ GÖĞSÜ üzerinden
+2) BESLENME — KARBONHİDRAT: Karbonhidrat kaynakları KATI bir şekilde SADECE
+   şunlarla sınırlıdır: pirinç, pirinç kreması, pirinç patlağı ve karabuğday
+   patlağı. Yulaf, ekmek, makarna, patates veya başka herhangi bir kaynak
+   KESİNLİKLE önerilmez.
+3) BESLENME — PROTEİN: Protein ağırlıklı olarak HİNDİ GÖĞSÜ üzerinden
    hesaplanır.
 4) FOTOĞRAF ANALİZİ: Kullanıcı haftalık form/postür fotoğrafı yüklediğinde
    asimetri ve postür kontrolü yap. Gelişim durmuşsa üst vücut programını ve
@@ -489,9 +491,40 @@ maddeli cevap ver.
     return ask_coach(model, prompt)
 
 
-# =============================================================================
-# 4) FIRESTORE ENTEGRASYONU
-# =============================================================================
+def revise_plan_with_coach(model, context: dict):
+    """Mevcut plan + verileri değerlendirip GÜNCELLENMİŞ planı JSON olarak döndürür."""
+    if model is None:
+        return None, "Gemini yapılandırılmamış."
+    ctx = json.dumps(context, ensure_ascii=False, indent=2)
+    prompt = (
+        "Aşağıda kullanıcının güncel program, beslenme planı (antrenman/dinlenme günü), "
+        "son loglar ve sağlık verileri var. Bunları kurallarına göre değerlendir ve "
+        "GEREKLİ GÜNCELLEMELERİ yaparak YENİ planı üret.\n\n"
+        "Kurallar: 5 günlük üst vücut split, bacak yok; karbonhidrat sadece pirinç/"
+        "pirinç kreması/pirinç patlağı/karabuğday patlağı; protein hindi göğsü ağırlıklı; "
+        "güçlü bilimsel kanıta dayan, uydurma kaynak verme.\n\n"
+        "SADECE şu formatta geçerli bir JSON nesnesi döndür (başka metin/``` olmadan):\n"
+        '{\n'
+        '  "aciklama": "Neyi neden değiştirdiğinin kısa özeti",\n'
+        '  "program": [{"gun":"Pazartesi","odak":"Göğüs","egzersizler":"1. ...\\n2. ..."}],\n'
+        '  "beslenme_on": [{"ogun":"1. Öğün","icerik":"...","protein_g":0,"karb_g":0,"yag_g":0,"kcal":0}],\n'
+        '  "beslenme_off": [{"ogun":"1. Öğün","icerik":"...","protein_g":0,"karb_g":0,"yag_g":0,"kcal":0}]\n'
+        '}\n'
+        "Egzersizleri her satır ayrı (\\n ile). Kalori = protein*4 + karb*4 + yağ*9.\n\n"
+        f"GÜNCEL VERİLER:\n{ctx}"
+    )
+    ham = ask_coach(model, prompt)
+    temiz = (ham or "").replace("```json", "").replace("```", "").strip()
+    bas, son = temiz.find("{"), temiz.rfind("}")
+    if bas != -1 and son != -1 and son > bas:
+        temiz = temiz[bas:son + 1]
+    try:
+        out = json.loads(temiz)
+        if isinstance(out, dict):
+            return out, None
+        return None, "Beklenen formatta veri çıkmadı."
+    except Exception:
+        return None, f"Çözümlenemedi. Koç cevabı: «{(ham or '').strip()[:200]}»"
 @st.cache_resource(show_spinner=False)
 def init_firestore():
     """Firestore istemcisini başlatır.
@@ -1121,6 +1154,39 @@ with tab4:
         st.session_state["eval_chat"].append({"role": "assistant", "content": cevap})
     if cbtn2.button("🗑️ Sohbeti temizle"):
         st.session_state["eval_chat"] = []
+
+    # --- Koçun revizyonunu tablolara aktar ---
+    st.markdown("##### 🔁 Önerilen güncellemeleri tablolara aktar")
+    st.caption("Koç, mevcut plan ve verilerine göre güncellenmiş bir program/beslenme hazırlar; onaylarsan tablolara yazılır.")
+    if st.button("🤖 Koç güncellenmiş planı hazırlasın"):
+        with st.spinner("Koç güncellenmiş planı hazırlıyor..."):
+            yeni_plan, hata = revise_plan_with_coach(model, bağlam)
+        if yeni_plan:
+            st.session_state["onerilen_plan"] = yeni_plan
+        else:
+            st.error(hata or "Plan hazırlanamadı.")
+
+    onerilen = st.session_state.get("onerilen_plan")
+    if onerilen:
+        if onerilen.get("aciklama"):
+            st.markdown(f'<div class="panda-card"><b>Koçun özeti:</b><br>{onerilen["aciklama"]}</div>',
+                        unsafe_allow_html=True)
+        with st.expander("👁️ Önerilen planı önizle", expanded=False):
+            st.json({k: v for k, v in onerilen.items() if k != "aciklama"})
+        ap1, ap2 = st.columns([1, 1])
+        if ap1.button("✅ Tablolara aktar", type="primary"):
+            if onerilen.get("program"):
+                st.session_state["program_data"] = onerilen["program"]
+            if onerilen.get("beslenme_on"):
+                st.session_state["beslenme_data_on"] = onerilen["beslenme_on"]
+            if onerilen.get("beslenme_off"):
+                st.session_state["beslenme_data_off"] = onerilen["beslenme_off"]
+            st.session_state.pop("onerilen_plan", None)
+            st.success("Aktarıldı. Yukarıdaki tablolarda kontrol edip 'Program & Planı Kaydet' ile kaydedin.")
+            st.rerun()
+        if ap2.button("✖️ Vazgeç"):
+            st.session_state.pop("onerilen_plan", None)
+            st.rerun()
 
     # Sohbet geçmişini göster
     for msg in st.session_state["eval_chat"]:
