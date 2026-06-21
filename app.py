@@ -997,6 +997,12 @@ with tab4:
         """Bir gün tipi için beslenme tablosu + makro hesaplama düğmesi. Düzenlenmiş listeyi döndürür."""
         sess_key = f"beslenme_data_{anahtar}"
         kaynak = st.session_state.get(sess_key, varsayilan)
+        # Eski kayıtlarda yağ alanı yoksa ekle (sütunun görünmesi için şart)
+        for _m in kaynak:
+            _m.setdefault("yag_g", 0)
+            _m.setdefault("protein_g", 0)
+            _m.setdefault("karb_g", 0)
+            _m.setdefault("kcal", 0)
 
         if st.button("🤖 İçerikten makro/kalori hesapla", key=f"makro_btn_{anahtar}"):
             with st.spinner("İçerikten makrolar hesaplanıyor..."):
