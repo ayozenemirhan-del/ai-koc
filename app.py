@@ -873,17 +873,11 @@ with tab1:
     rpe = t3.slider("Zorluk (RPE)", min_value=1, max_value=10, value=int(g_kayit.get("rpe", 8)),
                     key=f"rpe_{gun_str}", help="Algılanan efor: 1 = çok kolay, 10 = maksimal")
 
-    _kalori_kayit = g_kayit.get("kalori", None)
-    kalori = st.number_input("Toplam alınan kalori (kcal) — boş bırakabilirsiniz", min_value=0, max_value=8000, step=50,
-                             value=(int(_kalori_kayit) if _kalori_kayit not in (None, "", 0) else None),
-                             placeholder="Girmezseniz boş kalır", key=f"kalori_{gun_str}")
-
     if st.button("💾 Günlük Veriyi Firebase'e Kaydet", type="primary"):
         payload = {
             "tarih": gun_str,
             "gun_adi": gun_adi,
             "kilo": (float(kilo) if kilo not in (None, "") else None),
-            "kalori": (int(kalori) if kalori not in (None, "") else None),
             "adim": (int(adim) if adim not in (None, "") else None),
             "antrenman_kayit": antrenman_kayit,
             "kardiyo": (kardiyo_gunluk if kardiyo_yapildi else []),
@@ -915,16 +909,27 @@ with tab2:
     onceki_olcu = h_kayit.get("olculer", {})
 
     st.markdown("#### 📏 Vücut Ölçüleri (cm)")
+    st.caption("Girmezseniz boş kalır. Bu ölçüler sadece haftalık değerlendirmede kullanılır.")
     m1, m2, m3, m4 = st.columns(4)
+
+    def _olcu(onc, ad):
+        v = onc.get(ad, None)
+        return float(v) if v not in (None, "", 0) else None
+
     omuz = m1.number_input("Omuz", min_value=0.0, max_value=200.0, step=0.5,
-                           value=float(onceki_olcu.get("omuz", 120.0)), key=f"omuz_{h_str}")
+                           value=_olcu(onceki_olcu, "omuz"), placeholder="—", key=f"omuz_{h_str}")
     gogus = m2.number_input("Göğüs", min_value=0.0, max_value=200.0, step=0.5,
-                            value=float(onceki_olcu.get("gogus", 105.0)), key=f"gogus_{h_str}")
+                            value=_olcu(onceki_olcu, "gogus"), placeholder="—", key=f"gogus_{h_str}")
     bel = m3.number_input("Bel", min_value=0.0, max_value=200.0, step=0.5,
-                          value=float(onceki_olcu.get("bel", 80.0)), key=f"bel_{h_str}")
+                          value=_olcu(onceki_olcu, "bel"), placeholder="—", key=f"bel_{h_str}")
     kol = m4.number_input("Kol", min_value=0.0, max_value=100.0, step=0.5,
-                          value=float(onceki_olcu.get("kol", 38.0)), key=f"kol_{h_str}")
-    olculer = {"omuz": omuz, "gogus": gogus, "bel": bel, "kol": kol}
+                          value=_olcu(onceki_olcu, "kol"), placeholder="—", key=f"kol_{h_str}")
+    olculer = {
+        "omuz": (omuz if omuz not in (None, "") else None),
+        "gogus": (gogus if gogus not in (None, "") else None),
+        "bel": (bel if bel not in (None, "") else None),
+        "kol": (kol if kol not in (None, "") else None),
+    }
 
     st.markdown("#### 🖼️ Form / Postür Fotoğrafları")
 
