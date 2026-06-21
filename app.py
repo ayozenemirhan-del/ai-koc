@@ -47,9 +47,11 @@ KESİN KURALLAR:
 1) ANTRENMAN: Programlar 5 günlük split şeklinde ve SADECE üst vücut
    hipertrofisi odaklı olmalıdır. Hiçbir koşulda alt vücut / bacak egzersizi
    (squat, leg press, lunge, deadlift dahil) tavsiye edilmez.
-2) BESLENME — KARBONHİDRAT: Karbonhidrat kaynakları yulaf hariç tüm önerilere açıktır. 
-Program için  en verimli seçenekler kişinin hedefine ve yağ oranına göre değerlendirilir.
-3) BESLENME — PROTEİN: Protein ağırlıklı olarak 1. tercih HİNDİ GÖĞSÜ üzerinden
+2) BESLENME — KARBONHİDRAT: Karbonhidrat kaynakları KATI bir şekilde SADECE
+   şunlarla sınırlıdır: pirinç, pirinç kreması, pirinç patlağı ve karabuğday
+   patlağı. Yulaf, ekmek, makarna, patates veya başka herhangi bir kaynak
+   KESİNLİKLE önerilmez.
+3) BESLENME — PROTEİN: Protein ağırlıklı olarak HİNDİ GÖĞSÜ üzerinden
    hesaplanır.
 4) FOTOĞRAF ANALİZİ: Kullanıcı haftalık form/postür fotoğrafı yüklediğinde
    asimetri ve postür kontrolü yap. Gelişim durmuşsa üst vücut programını ve
@@ -71,7 +73,10 @@ Program için  en verimli seçenekler kişinin hedefine ve yağ oranına göre d
 8) TEMBEL ÖNERİ YASAK: Kolaya kaçıp her şeye "yulaf ve whey protein" deme.
    Karbonhidrat sadece izinli kaynaklardan (pirinç vb.), protein hindi göğsü
    ağırlıklı olacak; whey/yulaf varsayılan çözüm olarak sunulmaz.
-9) Tüm cevapların TÜRKÇE olmalı. Gereksiz övgüden kaçın; kullanıcıyı hedefe
+9) EKSİK VERİ: Bir alan (adım, kalori, uyku vb.) boş/girilmemişse bunu "sıfır"
+   ya da "kullanıcı yapmadı/başarısız" gibi YORUMLAMA. Sadece "bu veri henüz
+   girilmemiş" de ve o alan üzerinden suçlayıcı çıkarım yapma.
+10) Tüm cevapların TÜRKÇE olmalı. Gereksiz övgüden kaçın; kullanıcıyı hedefe
    odaklı tut. Sağlık açısından kritik bir uyarı görürsen (örn. aşırı düşük
    kalori, sakatlık belirtisi) bunu açıkça belirt.
 """.strip()
@@ -410,6 +415,34 @@ def _parse_saat(s, varsayilan="08:00"):
         return datetime.strptime(str(s), "%H:%M").time()
     except Exception:
         return datetime.strptime(varsayilan, "%H:%M").time()
+
+
+import re as _re
+GUN_ADLARI = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
+
+
+def _gun_adi(d):
+    return GUN_ADLARI[d.weekday()]
+
+
+def _set_sayisi(satir):
+    """Egzersiz satırındaki '4x10' gibi ifadeden set sayısını çıkarır."""
+    m = _re.search(r"(\d+)\s*[xX×]\s*\d+", satir or "")
+    if m:
+        return min(max(int(m.group(1)), 1), 10)
+    return 3
+
+
+def _gun_programi(plan, gun_adi):
+    """Plan içinden belirli güne ait satırı bulur."""
+    for r in plan.get("program", []):
+        if str(r.get("gun", "")).strip().lower() == gun_adi.lower():
+            return r
+    return None
+
+
+def _egzersiz_satirlari(egz):
+    return [e.strip() for e in str(egz or "").replace(",", "\n").split("\n") if e.strip()]
     """Kan tahlili fotoğrafını/ekran görüntüsünü Gemini Vision ile okur ve özetler."""
     if model is None:
         return "⚠️ Gemini yapılandırılmamış."
@@ -676,75 +709,105 @@ with tab1:
     col_a, col_b = st.columns([1, 1])
     gun = col_a.date_input("Tarih", value=date.today(), key="gunluk_tarih")
     gun_str = gun.isoformat()
+    gun_adi = _gun_adi(gun)
+    col_a.caption(f"📅 {gun_adi}")
 
-    # Seçilen tarihin kayıtlı verisini getir (varsa forma yüklenir)
     g_kayit = load_doc(db, "gunluk_loglar", gun_str)
     if g_kayit:
         col_b.caption("✅ Bu tarihe ait kayıt yüklendi.")
 
-    kilo = col_b.number_input("Sabah kilosu (kg)", min_value=30.0, max_value=250.0, step=0.1,
-                              value=float(g_kayit.get("kilo", 80.0)), key=f"kilo_{gun_str}")
+    _kilo_k = g_kayit.get("kilo", None)
+    kilo = col_b.number_input("Sabah kilosu (kg) — boş bırakabilirsiniz", min_value=0.0, max_value=250.0, step=0.1,
+                              value=(float(_kilo_k) if _kilo_k not in (None, "", 0) else None),
+                              placeholder="Girmezseniz boş kalır", key=f"kilo_{gun_str}")
 
-    st.markdown("#### 🍽️ Öğünler")
-    st.caption("Saat ve detaylı içerik girin. Satır ekleyip çıkarabilirsiniz.")
-    default_meals = g_kayit.get("ogunler", [
-        {"saat": "08:00", "icerik": ""},
-        {"saat": "13:00", "icerik": ""},
-        {"saat": "19:00", "icerik": ""},
-    ])
-    meals = st.data_editor(
-        default_meals,
-        num_rows="dynamic",
-        use_container_width=True,
-        column_config={
-            "saat": st.column_config.TextColumn("Saat", width="small"),
-            "icerik": st.column_config.TextColumn("İçerik (besin + gram)", width="large"),
-        },
-        key=f"meals_editor_{gun_str}",
-    )
+    plan = load_doc(db, "program_plan", "guncel")
 
-    c1, c2 = st.columns([1, 2])
-    if c1.button("🤖 Öğünlerden kalori tahmini"):
-        with st.spinner("Kalori hesaplanıyor..."):
-            st.session_state["kcal_tahmin"] = estimate_calories(model, meals)
-    if st.session_state.get("kcal_tahmin"):
-        c2.info(st.session_state["kcal_tahmin"])
+    # ---- Bugünün antrenmanı (set set tekrar/kg) ----------------------------
+    gun_prog = _gun_programi(plan, gun_adi)
+    st.markdown(f"#### 🏋️ Bugünün Antrenmanı — {gun_adi}")
+    antrenman_kayit = []
+    if gun_prog and _egzersiz_satirlari(gun_prog.get("egzersizler")):
+        st.caption(f"Odak: {gun_prog.get('odak','')}  ·  Her set için tekrar ve kilo girin.")
+        kayitli_ant = g_kayit.get("antrenman_kayit")
+        if kayitli_ant:
+            ant_rows = kayitli_ant
+        else:
+            ant_rows = []
+            for satir in _egzersiz_satirlari(gun_prog.get("egzersizler")):
+                for i in range(1, _set_sayisi(satir) + 1):
+                    ant_rows.append({"egzersiz": satir, "set": i, "tekrar": None, "kg": None})
+        antrenman_kayit = st.data_editor(
+            ant_rows,
+            num_rows="dynamic",
+            use_container_width=True,
+            column_order=("egzersiz", "set", "tekrar", "kg"),
+            column_config={
+                "egzersiz": st.column_config.TextColumn("Egzersiz", width="large"),
+                "set": st.column_config.NumberColumn("Set", width="small"),
+                "tekrar": st.column_config.NumberColumn("Tekrar", width="small"),
+                "kg": st.column_config.NumberColumn("Kg", width="small"),
+            },
+            key=f"ant_kayit_{gun_str}",
+        )
+    else:
+        st.info(f"{gun_adi} için programda hareket yok (dinlenme olabilir) veya program henüz girilmedi. "
+                "Program & Değerlendirme sekmesinden girebilirsiniz.")
 
-    # Fotoğraftan kalori tahmini
-    with st.expander("📷 Fotoğraftan kalori tahmini"):
-        st.caption("Tabağın fotoğrafını çekin/yükleyin. İsterseniz porsiyon notu ekleyin (örn. '200g hindi, 1 kase pirinç').")
-        yemek_fotolari = st.file_uploader("Yemek fotoğrafı", type=["jpg", "jpeg", "png"],
-                                          accept_multiple_files=True, key=f"yemek_foto_{gun_str}")
-        yemek_not = st.text_input("Porsiyon notu (isteğe bağlı)", key=f"yemek_not_{gun_str}")
-        if yemek_fotolari and PIL_OK:
-            kucuk = [Image.open(f) for f in yemek_fotolari]
-            st.image(kucuk, width=140)
-        if st.button("🍽️ Fotoğraftan kaloriyi tahmin et"):
-            if not yemek_fotolari:
-                st.warning("Önce bir fotoğraf ekleyin.")
-            elif PIL_OK:
-                imgs = [Image.open(f) for f in yemek_fotolari]
-                with st.spinner("Görsel analiz ediliyor..."):
-                    st.session_state["kcal_foto_tahmin"] = estimate_calories_image(model, imgs, yemek_not)
-        if st.session_state.get("kcal_foto_tahmin"):
-            st.info(st.session_state["kcal_foto_tahmin"])
+    # ---- Bugünün beslenmesi (Antrenman Günü planı) — öğün öğün uyum --------
+    st.markdown("#### 🍽️ Bugünün Beslenmesi (Antrenman Günü planı)")
+    on_meals = plan.get("beslenme_on", []) or plan.get("beslenme", [])
+    onceki_uyum = {u.get("ogun"): u for u in g_kayit.get("beslenme_uyum", [])}
+    beslenme_uyum = []
+    if not on_meals:
+        st.caption("Program & Değerlendirme sekmesinde Antrenman Günü beslenmesi girilmemiş.")
+    for i, m in enumerate(on_meals):
+        ogun = m.get("ogun", f"{i+1}. Öğün")
+        plan_icerik = m.get("icerik", "")
+        onc = onceki_uyum.get(ogun, {})
+        st.markdown(f"**{ogun}** — {plan_icerik or '(içerik yok)'}")
+        cc1, cc2 = st.columns([1, 3])
+        uydum = cc1.checkbox("Uydum ✓", value=bool(onc.get("uydum", False)), key=f"uydum_{gun_str}_{i}")
+        yerine_not = ""
+        tahmin = onc.get("tahmin_kcal", "")
+        if not uydum:
+            yerine_not = cc2.text_input("Yerine ne yedim? (yazı)", value=onc.get("yerine", ""),
+                                        key=f"yernot_{gun_str}_{i}")
+            yerine_foto = cc2.file_uploader("veya fotoğraf", type=["jpg", "jpeg", "png"],
+                                            key=f"yerfoto_{gun_str}_{i}")
+            if cc2.button("🍽️ Kaloriyi tahmin et", key=f"yerbtn_{gun_str}_{i}"):
+                with st.spinner("Tahmin ediliyor..."):
+                    if yerine_foto and PIL_OK:
+                        st.session_state[f"yerkcal_{gun_str}_{i}"] = estimate_calories_image(
+                            model, [Image.open(yerine_foto)], yerine_not)
+                    elif yerine_not.strip():
+                        st.session_state[f"yerkcal_{gun_str}_{i}"] = estimate_calories(
+                            model, [{"saat": "", "icerik": yerine_not}])
+                    else:
+                        st.warning("Fotoğraf veya yazı ekleyin.")
+            if st.session_state.get(f"yerkcal_{gun_str}_{i}"):
+                tahmin = st.session_state[f"yerkcal_{gun_str}_{i}"]
+                st.info(tahmin)
+        beslenme_uyum.append({
+            "ogun": ogun, "plan": plan_icerik, "uydum": bool(uydum),
+            "yerine": yerine_not, "tahmin_kcal": tahmin,
+        })
+        st.markdown("")
 
-    _kalori_kayit = g_kayit.get("kalori", None)
-    kalori = st.number_input("Toplam alınan kalori (kcal) — boş bırakabilirsiniz", min_value=0, max_value=8000, step=50,
-                             value=(int(_kalori_kayit) if _kalori_kayit not in (None, "", 0) else None),
-                             placeholder="Girmezseniz boş kalır",
-                             key=f"kalori_{gun_str}")
-
+    # ---- Uyku & Aktivite (adım boş başlar) --------------------------------
     st.markdown("#### 😴 Uyku & Aktivite")
     s1, s2, s3 = st.columns(3)
     uyku = s1.time_input("Uyku saati", value=_parse_saat(g_kayit.get("uyku_saati"), "23:30"),
                          key=f"uyku_{gun_str}")
     uyanma = s2.time_input("Uyanma saati", value=_parse_saat(g_kayit.get("uyanma_saati"), "07:30"),
                            key=f"uyanma_{gun_str}")
-    adim = s3.number_input("Adım sayısı", min_value=0, max_value=60000, step=500,
-                           value=int(g_kayit.get("adim", 8000)), key=f"adim_{gun_str}")
+    _adim_k = g_kayit.get("adim", None)
+    adim = s3.number_input("Adım sayısı — boş bırakabilirsiniz", min_value=0, max_value=60000, step=500,
+                           value=(int(_adim_k) if _adim_k not in (None, "", 0) else None),
+                           placeholder="Girmezseniz boş kalır", key=f"adim_{gun_str}")
 
-    st.markdown("#### 🏋️ Antrenman")
+    # ---- Antrenman saatleri & RPE -----------------------------------------
+    st.markdown("#### ⏱️ Antrenman Süresi & Zorluk")
     t1, t2, t3 = st.columns(3)
     ant_bas = t1.time_input("Başlangıç", value=_parse_saat(g_kayit.get("antrenman_baslangic"), "18:00"),
                             key=f"antbas_{gun_str}")
@@ -753,24 +816,28 @@ with tab1:
     rpe = t3.slider("Zorluk (RPE)", min_value=1, max_value=10, value=int(g_kayit.get("rpe", 8)),
                     key=f"rpe_{gun_str}", help="Algılanan efor: 1 = çok kolay, 10 = maksimal")
 
+    _kalori_kayit = g_kayit.get("kalori", None)
+    kalori = st.number_input("Toplam alınan kalori (kcal) — boş bırakabilirsiniz", min_value=0, max_value=8000, step=50,
+                             value=(int(_kalori_kayit) if _kalori_kayit not in (None, "", 0) else None),
+                             placeholder="Girmezseniz boş kalır", key=f"kalori_{gun_str}")
+
     if st.button("💾 Günlük Veriyi Firebase'e Kaydet", type="primary"):
         payload = {
             "tarih": gun_str,
-            "kilo": float(kilo),
+            "gun_adi": gun_adi,
+            "kilo": (float(kilo) if kilo not in (None, "") else None),
             "kalori": (int(kalori) if kalori not in (None, "") else None),
-            "ogunler": meals,
+            "adim": (int(adim) if adim not in (None, "") else None),
+            "antrenman_kayit": antrenman_kayit,
+            "beslenme_uyum": beslenme_uyum,
             "uyku_saati": uyku.strftime("%H:%M"),
             "uyanma_saati": uyanma.strftime("%H:%M"),
-            "adim": int(adim),
             "antrenman_baslangic": ant_bas.strftime("%H:%M"),
             "antrenman_bitis": ant_bit.strftime("%H:%M"),
             "rpe": int(rpe),
         }
         ok, msg = save_doc(db, "gunluk_loglar", gun_str, payload)
         (st.success if ok else st.error)(msg)
-        if not ok and db is None:
-            with st.expander("Kaydedilecek veri (önizleme)"):
-                st.json(payload)
 
 
 # -----------------------------------------------------------------------------
@@ -1130,29 +1197,41 @@ with tab4:
     if "eval_chat" not in st.session_state:
         st.session_state["eval_chat"] = []
 
-    # Bağlam: ekrandaki güncel program/plan + son 7 günlük log + sağlık verileri
-    son_loglar = load_recent(db, "gunluk_loglar", days=7)
+    # Bağlam: program/plan + son loglar + sağlık + EN SON HAFTALIK CHECK-IN
+    son_loglar = load_recent(db, "gunluk_loglar", days=14)
     saglik_kayit = load_doc(db, "saglik", "guncel")
+    haftaliklar = load_recent(db, "haftalik_checkin", days=60)
+    son_haftalik = haftaliklar[-1] if haftaliklar else {}
     bağlam = {
         "program": program,
         "beslenme_antrenman_gunu": beslenme_on,
         "beslenme_dinlenme_gunu": beslenme_off,
         "notlar": notlar,
-        "son_7_gun": son_loglar,
+        "son_gunluk_loglar": son_loglar,
+        "son_haftalik_checkin": {
+            "tarih": son_haftalik.get("tarih", ""),
+            "olculer": son_haftalik.get("olculer", {}),
+            "foto_analiz": son_haftalik.get("foto_analiz", ""),
+        },
+        "onceki_haftalik_olculer": [
+            {"tarih": h.get("tarih"), "olculer": h.get("olculer", {})} for h in haftaliklar[-4:]
+        ],
         "aktif_sakatliklar": saglik_kayit.get("sakatliklar", []),
         "kan_tahlili": saglik_kayit.get("kan", []),
         "saglik_notlari": saglik_kayit.get("notlar", ""),
     }
 
     cbtn1, cbtn2 = st.columns([1, 1])
-    if cbtn1.button("🔍 Programımı ve beslenmemi baştan değerlendir"):
+    if cbtn1.button("🔍 Haftalık değerlendirme yap"):
         with st.spinner("Koç değerlendiriyor..."):
             cevap = evaluate_with_coach(
                 model, st.session_state["eval_chat"], bağlam,
-                "Güncel programımı ve beslenme planımı kurallara göre değerlendir; "
-                "eksik, hata veya iyileştirme önerilerini maddele."
+                "HAFTALIK DEĞERLENDİRME yap. En son haftalık check-in'i (ölçüler + form fotoğrafı "
+                "analizi) ESAS AL; bunu önceki ölçülerle ve son günlük loglarla (antrenman set/kg, "
+                "beslenme uyumu, adım, uyku) birlikte yorumla. Gelişim var mı, nerede tıkanma var, "
+                "programda ve makroda ne değişmeli? Eksik veriyi 'girilmemiş' say, sıfır sayma. Maddele."
             )
-        st.session_state["eval_chat"].append({"role": "user", "content": "Programımı ve beslenmemi değerlendir."})
+        st.session_state["eval_chat"].append({"role": "user", "content": "Haftalık değerlendirme."})
         st.session_state["eval_chat"].append({"role": "assistant", "content": cevap})
     if cbtn2.button("🗑️ Sohbeti temizle"):
         st.session_state["eval_chat"] = []
