@@ -204,7 +204,8 @@ def check_password() -> bool:
     # Çerezde geçerli hatırlama varsa otomatik giriş
     if _cookie_mgr is not None:
         try:
-            if _cookie_mgr.get(REMEMBER_COOKIE) == _remember_token():
+            _cookies = _cookie_mgr.get_all()
+            if _cookies and _cookies.get(REMEMBER_COOKIE) == _remember_token():
                 st.session_state["auth_ok"] = True
                 return True
         except Exception:
@@ -220,14 +221,16 @@ def check_password() -> bool:
             st.session_state["auth_ok"] = True
             if hatirla and _cookie_mgr is not None:
                 try:
+                    # set() kendi rerun'unu tetikler; manuel rerun ile çerezi bozmayalım
                     _cookie_mgr.set(
                         REMEMBER_COOKIE, _remember_token(),
                         expires_at=datetime.now() + timedelta(days=REMEMBER_GUN),
                         key="set_remember",
                     )
                 except Exception:
-                    pass
-            st.rerun()
+                    st.rerun()
+            else:
+                st.rerun()
         else:
             st.error("Şifre yanlış.")
     return False
@@ -1028,17 +1031,29 @@ with tab4:
         return duzenlenen
 
     # Eski tek liste varsa onu Antrenman gününe taşı (geriye dönük uyum)
+    def _dolu(liste):
+        for r in (liste or []):
+            if str(r.get("icerik", "")).strip() or _say(r.get("protein_g")) or _say(r.get("karb_g")):
+                return True
+        return False
+
+    bos3 = [
+        {"ogun": "1. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
+        {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
+        {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
+    ]
     eski_tek = kayitli.get("beslenme", [])
-    varsayilan_on = kayitli.get("beslenme_on", eski_tek or [
-        {"ogun": "1. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-        {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-        {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-    ])
-    varsayilan_off = kayitli.get("beslenme_off", [
-        {"ogun": "1. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-        {"ogun": "2. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-        {"ogun": "3. Öğün", "icerik": "", "protein_g": 0, "karb_g": 0, "kcal": 0},
-    ])
+    kayit_on = kayitli.get("beslenme_on", [])
+    kayit_off = kayitli.get("beslenme_off", [])
+
+    # On: önce kayıtlı on, boşsa eski tek liste, o da boşsa boş şablon
+    if _dolu(kayit_on):
+        varsayilan_on = kayit_on
+    elif _dolu(eski_tek):
+        varsayilan_on = eski_tek
+    else:
+        varsayilan_on = bos3
+    varsayilan_off = kayit_off if _dolu(kayit_off) else list(bos3)
 
     bes_on_tab, bes_off_tab = st.tabs(["🏋️ Antrenman Günü (On)", "😴 Dinlenme Günü (Off)"])
     with bes_on_tab:
